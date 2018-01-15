@@ -1,6 +1,6 @@
 import os
 
-path="/home/roki/workspace/FlexFloatML/fourclass/";
+path="/home/roki/GIT/FPML/src/FlexFloat-ML/fourclass/";
 
 for fileName in os.listdir(path):
     if ("Train" in fileName) or ("Test" in fileName):
@@ -10,9 +10,9 @@ LexponentDataset=[10];
 LexponentComputation=[10];
 LexponentTest=[10];
 
-LmantissaDataset=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,23,52];
-LmantissaComputation=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,23,52];
-LmantissaTest=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,23,52];
+LmantissaDataset=[2,3,4,5,6,7,8,9,10,23,52];
+LmantissaComputation=[2,3,4,5,6,7,8,9,10,23,52];
+LmantissaTest=[2,3,4,5,6,7,8,9,10,23,52];
 
 for mantissaDataset in LmantissaDataset:
 	for exponentDataset in LexponentDataset:

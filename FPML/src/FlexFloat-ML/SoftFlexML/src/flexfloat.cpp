@@ -235,7 +235,7 @@ int main(int argc, char* argv[]){
 	
 	vector<string> trainingData={};
 	vector<string> testData={};
-	string fileName="/home/roki/workspace/FlexFloat-ML/fourclass/fourclassProc";
+	string fileName="/home/roki/GIT/FPML/src/FlexFloat-ML/fourclass/fourclassProc";
 		
 	map<string,vector<double>> myMapTrainingSVM;
 	map<string,vector<double>> myMapTestSVM;

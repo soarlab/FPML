@@ -1,5 +1,5 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass[sigplan,review,anonymous=false]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
 %% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
@@ -59,19 +59,19 @@
                         %% http://ctan.org/pkg/booktabs
 \usepackage{subcaption} %% For complex figures with subfigures/subcaptions
                         %% http://ctan.org/pkg/subcaption
-
+\usepackage{lmodern}
 
 \begin{document}
 
 %% Title information
-\title[Short Title]{Full Title}         %% [Short Title] is optional;
+\title[Short Title]{Measuring accuracy and performance of Perceptron and SVM algorithm under different FP precisions}         %% [Short Title] is optional;
                                         %% when present, will be used in
                                         %% header instead of Full Title.
-\titlenote{with title note}             %% \titlenote is optional;
+\titlenote{Both Vanilla and Average variants of the Perceptron algorithm}             %% \titlenote is optional;
                                         %% can be repeated if necessary;
                                         %% contents suppressed with 'anonymous'
 \subtitle{Subtitle}                     %% \subtitle is optional
-\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
+\subtitlenote{with sudddddbtitle note}       %% \subtitlenote is optional;
                                         %% can be repeated if necessary;
                                         %% contents suppressed with 'anonymous'
 
@@ -136,7 +136,8 @@
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
-Text of abstract \ldots.
+Perceptron and SVM algortithm are two well known linear predictors. They are both mistake bound algorithm in the sense that when a mistake happen a correctino is applied to the the weight vector. The weight vector is the for both the algorithm is used al predictor of samples. 
+Both the dot product and the update of the these two algortihm is performed in double precision. The main goal of this work is to analyse what is the impact of the FP precision adopted for the dataset, computation and test, of the final accuracy of the algorithm. Our analysis want to span the really poor value of the floating point range, and compare the results of these computations with respect to well known IEEE defined standard: single and double precision.\ldots. $-1$
 \end{abstract}
 
 
@@ -173,8 +174,17 @@ Text of abstract \ldots.
 %% environment and commands, and keywords command.
 \maketitle
 
-
 \section{Introduction}
+Many times a floating point analyzer is applied to a black box algorithm to detect the minimal configuration of each floating point instruction that minimize the final error of the algorithm. In particular the goal of these tools is to produce such a configuration that achieve the input value. These techniques allow both static or dynamic approach where the second one produces better results in terms of accuracy of the solution, because that particular computation was tested al runtime. Part of the analysis is definitely to apply the discovered configuration to an evaluation procedure that verify that the user defined requests are respected.
+
+The comparison between static and dynamic procedure solved in favour of dynamic one because this kind of analysis is definitely ill- conditioned: the input of the analysis (eg. the dataset) impacts on the precision to adopt in the algorithm. Basically, static analysis shows excellent result when the analysis goal is to detect when a behavior exists or not, but when it is time to express the quality of the solution 'testing analysis' returns better results: because the quality of the solution is tested on an evaluation procedure. Dynamic analysis applied to Floating point procedure maintains few 'ghost' executions at runtime that replicate the behaviour of the program under a different floating point precision. Other times the code is injected into the binary of the program and the candidate result is again evaluated. Many heuristics and optimization exists to span the whole spectrum of the floating point precisions (from 1 to 52 bits for the mantissa representation) using binary search or limiting the reseach from single to double precision (from 23 to 52 bits for mantissa).
+
+Our analysis admire and look forward these FP analyzers, and our goal is not to detect the minimal FP configuration of Perceptron and SVM such that the evaluation step is confirmed, but to analyze what are the behaviors of the accuracy of such predictors for really poor FP precision computations. In particular we want to compare the accuracy in case from poor value of floating point precision (from 2 to 10 bits) and compare them to well know (expensive) single and double standards. Most of the times FP analyzer arbitrarily fixed the range to span of all the possible floating point precision until double (all double configuration represent the worst case in terms of FP efficiency and energy consumption). For Perceptron and SVM variants, our work aim to be a preliminary step in the detection of the bounds of the range to analyze.
+
+The main impact of such work is on the precision adopted to represent data in a dataset. Most of the times predictors act on a dataset when tuples represent real characters. For this reasons they need to be discretized. A common question is how many bits of mantissa and exponent need to be adopted to represent/store these value in the dataset. Minimize this precision, while still maintaining accurate values for the accuracy of the predictor ($\frac{Correct.Classification}{Tot.classification}$) quantities produce enormous saving in terms of energy consumption, computational effort, and memory savage.
+
+Thanks to floating point representation real numbers can be discretized in the machine using: the sign of the number, the significant also called mantissa and an exponent. The real value is then discretized with $(-1)^{sign} \cdot significand \cdot 2^{exponent}$. The floating point representation is part of the IEEE 754 that includes two well known representations among others: single precision (1bit sign, 23bits mantissa, 8bits exponent) and double precision (1bit sign, 23bits mantissa, 8bits exponent). These two are the most common used representation for fp computations. It has been showed in [] that most of the time the way the total number of bits is splitted in mantissa and exponent (1 sign always) it is not usefull and better results can be obtained by reassigning the number of bits in different ways\cite{softfloat}
+ 
 FP representation, sign,exp,mantissa,IEEE, single, double\\
 Energy Consumption, execution time\\
 Why this work.\\
@@ -214,7 +224,7 @@ Text of paper \ldots
 
 
 %% Bibliography
-%\bibliography{bibfile}
+\bibliography{bibfile}
 
 
 %% Appendix
