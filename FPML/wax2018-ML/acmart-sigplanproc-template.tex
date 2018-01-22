@@ -1,5 +1,5 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
-\documentclass[sigplan,review,anonymous=false]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass[sigplan,review=false,anonymous=false]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
 %% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
@@ -14,10 +14,10 @@
 %% Supplied to authors by publisher for camera-ready submission;
 %% use defaults for review submission.
 
-\acmConference[]{}
-\acmYear{}
-\acmISBN{} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
-\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
+\acmConference[]{none}
+\acmYear{2018}
+\acmISBN{a} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
+\acmDOI{a} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
 \startPage{1}
 
 %% Copyright information
@@ -66,10 +66,10 @@
 \begin{document}
 
 %% Title information
-\title[Short Title]{Exploring Floating-Point Trade-Offs in Machine Learning}         %% [Short Title] is optional;
+\title{Exploring Floating-Point Trade-Offs in Machine Learning}         %% [Short Title] is optional;
                                         %% when present, will be used in
                                         %% header instead of Full Title.
-\titlenote{Both Vanilla and Average variants of the Perceptron algorithm}             %% \titlenote is optional;
+%\titlenote{Both Vanilla and Average variants of the Perceptron algorithm}             %% \titlenote is optional;
                                         %% can be repeated if necessary;
                                         %% contents suppressed with 'anonymous'
 %\subtitle{Subtitle}                     %% \subtitle is optional
@@ -90,7 +90,7 @@
 
 %% Author with single affiliation.
 \author{First1 Last1}
-\authornote{with author1 note}          %% \authornote is optional;
+%\authornote{with author1 note}          %% \authornote is optional;
                                         %% can be repeated if necessary
 \orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
 \affiliation{
@@ -107,7 +107,7 @@
 
 %% Author with two affiliations and emails.
 \author{First2 Last2}
-\authornote{with author2 note}          %% \authornote is optional;
+%\authornote{with author2 note}          %% \authornote is optional;
                                         %% can be repeated if necessary
 \orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
 \affiliation{
@@ -127,121 +127,104 @@
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
-	
-Both Perceptron and SVM algorithms are two well known linear predictors. The weight vector has the goal of model it self to the training set, for later performing on unknown data.
-The training and testing of these two algorithms is usually performed using IEEE 754 double precision. 
-The main goal of this work is to analyze what is the impact of FP precision adopted for reading the dataset, compute the training and at the end testing it, on the final accuracy of the predictor. 
-Our analysis spans the really poor values of the floating point range, and compare these results with respect to well known IEEE defined standards: single and double precision.
+Perceptron and SVM algorithms are two well known linear predictors. Their goal is to built the best hypothesis based on training data and to test it on unknown samples. 
+Usually, both training and testing procedures are performed using IEEE 754 double precision, which results in a conservative approach act to guarantee no loss on the final accuracy of each algorithm. 
+The main goal of this work is to analyze what is the impact of floating point precision tuning applied to well know predictors. In particular we want to detect which one between: reading the dataset, computing training and testing of the predictor, impact the most on the final accuracy of the algorithm. 
+Our analysis spans minimal values of the floating point range, and compare the resulting accuracy to well known IEEE defined standards: single and double precision.
 \end{abstract}
 
 
 %% 2012 ACM Computing Classification System (CSS) concepts
 %% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
-\begin{CCSXML}
-<ccs2012>
-<concept>
-<concept_id>10011007.10011006.10011008</concept_id>
-<concept_desc>Software and its engineering~General programming languages</concept_desc>
-<concept_significance>500</concept_significance>
-</concept>
-<concept>
-<concept_id>10003456.10003457.10003521.10003525</concept_id>
-<concept_desc>Social and professional topics~History of programming languages</concept_desc>
-<concept_significance>300</concept_significance>
-</concept>
-</ccs2012>
-\end{CCSXML}
+%\begin{CCSXML}
+%<ccs2012>
+%<concept>
+%<concept_id>10011007.10011006.10011008</concept_id>
+%<concept_desc>Software and its engineering~General programming languages</concept_desc>
+%<concept_significance>500</concept_significance>
+%</concept>
+%<concept>
+%<concept_id>10003456.10003457.10003521.10003525</concept_id>
+%<concept_desc>Social and professional topics~History of programming languages</concept_desc>
+%<concept_significance>300</concept_significance>
+%</concept>
+%</ccs2012>
+%\end{CCSXML}
 
-\ccsdesc[500]{Software and its engineering~General programming languages}
-\ccsdesc[300]{Social and professional topics~History of programming languages}
+%\ccsdesc[500]{Software and its engineering~General programming languages}
+%\ccsdesc[300]{Social and professional topics~History of programming languages}
 %% End of generated code
-
-
 %% Keywords
 %% comma separated list
-\keywords{keyword1, keyword2, keyword3}  %% \keywords are mandatory in final camera-ready submission
-
-
+%\keywords{SVM, Perceptron, floating point, consumption.}  %% \keywords are mandatory in final camera-ready submission
 %% \maketitle
 %% Note: \maketitle command must come after title commands, author
 %% commands, abstract environment, Computing Classification System
 %% environment and commands, and keywords command.
 \maketitle
-
 \section{Introduction}
-A lot of different works studied the impact of low precision computations on machine learning predictors. 
-Gupta et al\cite{gupta} focuses the analysis on fixed-point arithmetic, with a particular emphasis on rounding mode of fixed-point operations because considered one of the main actor in the success of low cost arithmetic. The authors prove that deep neural network can be trained using fixed-point arithmetic at low precision. They show how using fixed point with 16 bit precision produces same results of single floating point (32 bit precision). 
+Nowadays many different works aim to study the impact of low-cost floating point precision on machine learning predictors.\\
+Gupta et al.\cite{gupta} focus their analysis on fixed-point arithmetic. The authors prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
+They show how performing fixed point arithmetic using only 16 bit of precision produces same results of IEEE754 single floating point representation (32 bit precision). 
 
-Zhou et al. in \cite{dorefa} proposes innovative  methods to train convolutional neural networks that
-have low bit-width weights, activations step and parameter gradients. In particular they show how using 1 bit weight, 1 bit activation and 2 bit gradient achieve a value of 93\% of accuracy compare to 97\% obtained with 32 bit single precision. 
-At the same time using 1A,1G and 8G bit configuration reaches exactly the same accuracy than the 32 bits counter part.
+Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with a low bit-width weights, activations and gradients. In particular, they show how using 1 bit weight, 1 bit activation and 2bit gradient achieve a value of 93\% of accuracy compare to 97\% obtained with 32bit single precision. 
 
-Hubara et al.\cite{Hubara} introduces a method to train Quantized-Neural-Networks (QNNs) with low precision weights and activations and they reach the same results as single precision 32 bit. 
-In particular, using 4 bits for weights and activation, the degradation of the accuracy is 5.5\% compared to 32 bit single precision. Moreover, they report an approximate 5.6\% drop in performance (top-1 accuracy) compared to 32-bit floating
-point representation, using only 1-bit for weights and 2-bit for activation step.
+Hubara et al.\cite{Hubara} introduce a method to train Quantized-Neural-Networks (QNNs) using low precision arithmetic while still maintaining same results in terms of accuracy. 
+In particular their results shown how using 4 bits for weights and activation step, result in a degradation of the accuracy of 5.5\% compared to 32 bit single precision.
 
-At the same time we are aware of many floating point analyzer that could be applied to a black box algorithm to detect the minimal configuration of each floating point instructions in the program, with the goal of minimizing the final error \cite{reducelam}\cite{mixpreclam}\cite{precimonious}\cite{blame}. 
+At the same time, we are aware of many floating point analyzer that are able to scan a black box algorithm with the goal minimizing the precision of each floating point instruction while still maintaining desired value of accuracy. \cite{reducelam}\cite{mixpreclam}\cite{precimonious}\cite{blame}. 
 
-Program analysis applied to floating point instructions usually maintains few 'ghosts' executions that replicate the behavior of the program under different floating point precisions.\cite{blame}\cite{precimonious}. The result of the tuning of the instructions is injected into the binary code of the program and the candidate result may be evaluated again.\cite{mixpreclam}\cite{reducelam}.
+%Program analysis applied to floating point instructions usually maintains few 'ghosts' executions of the program, to replicate the behavior of it with different floating point precisions.\cite{blame}\cite{precimonious}. Once a particular configuration satisfy the evaluation procedure provided by the user, the binary code is altered instructions is injected into the binary code of the program and the candidate result may be evaluated again.\cite{mixpreclam}\cite{reducelam}.
 
 %In particular, the aim of these tools is to produce the minimal configuration of FP instructions such that the output keeps same quality. 
 %These techniques involve both static and dynamic approaches: usually the first is used to detect FP instructions in the program, while the second one produces improvement on the configuration of the solution, also due to 'ghost' executions that verify the current configuration.
 
-Our analysis admire and look forward these analyzers, but our goal move away from the detection of the minimal FP configuration of Perceptron and SVM such that a given value of accuracy is reached. What we do indeed is to study what are the behaviors of the accuracy of these predictors for really poor FP precision computations. 
+Our work admire and look forward these analyzers, but our goal move away from the detection of the minimal floating point configuration of Perceptron and SVM. 
+We decide to study what affect the accuracy of these predictors in case of poor floating point precision computations. 
 
-In particular, we want to compare the accuracy of the predictors ($\frac{Correct.Prediction}{Tot.Samples}$) in case of really poor floating point precision (from 2 to 10 bits for mantissa representation) and compare them to well know (expensive) single and double IEEE 754 double precision. 
+In particular, we want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. 
 
-Most of the times FP analyzer arbitrarily fixed the range to span of all the possible floating point precision until double (eg. all double configuration represent the worst case in terms of FP efficiency and energy consumption). 
-
-Our work concentrates the results on tuning the precision of mantissa, because it may show gradual improvement on the final accuracy, that is directly proportional to the number of bits assigned to the representation. 
-On the other hand, the exponent does not show such behavior. When a given amount of bits n does not produce an overflow (or underflow) in the computation, testing the exponent range using $m>n$ bits dedicated to dynamic range has no impact on the accuracy of the algorithm. 
-
+Our work is focused on tuning the precision of mantissa, because after a preliminary study we affirm that mantissa may show gradual improvement on the final accuracy on the predictor, that is directly proportional to the number of bits assigned to the representation. 
+On the other hand, the exponent does not exhibits such behavior. 
+When a floating point format does not result in overflow (or underflow), increasing the number of bits assigned to the exponent has no impact on the accuracy of the algorithm. 
 \section{Background}
-One way real numbers can be discretized in the machine is using floating point representation. The format adopted for the representation is the following: sign of the number, significant (mantissa) and exponent. The  value is then represented with $(-1)^{sign} \cdot significand \cdot 2^{exponent}$. 
-The floating point representation is part of the IEEE 754 standard that, among the others, includes two well known representations: single precision (1bit sign, 23bits mantissa, 8bits exponent) and double precision (1bit sign, 52bits mantissa, 11bits exponent). 
-These are the most common representations used for FP computations. It has been showed in \cite{softfloat} that most of the time the way the total number of bits is divided in mantissa and exponent (1 bit sign always exists) it is not the best possible and better results can be obtained by reassigning the number of bits in different ways\cite{softfloat}.
-
+One way real numbers can be discretized in the machine is using floating point representation. The format adopted is the following: sign of the number, significand (mantissa) and exponent. 
+The floating point representation is part of the IEEE 754 standard that, among the others, includes two well known representations: single precision (1bit sign, 23bit mantissa, 8bit exponent) and double precision (1bit sign, 52bit mantissa, 11bit exponent). 
+It has been showed \cite{softfloat} that the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
 %\section{Perceptron and SVM}
 \subsection{Perceptron and SVM}
-The Perceptron algorithm is a supervised learning algorithm invented by Frank Rosenblatt in 1957\cite{perceptron}. The goal of the predictor is to built a  linear decision boundary on the training set and to classify future samples based on such classifier. To reach such goal, the Perceptron updates the coordinates of the hyperplane such that the linear bounds will come closer to the misclassified sample. 
-The Perceptron is a mistake driven algorithm: once a sample is misclassified the predictor is corrected (it does not mean that the sample now is correctly classified).
-Particularly interesting in terms of FP analysis is one of the variant of the vanilla Perceptron: the Average Perceptron. 
-The Average Perceptron differs from the vanilla version because it maintains an average vector weighted on the misclassification occurred until the current iteration. 
-Our interests about FP analysis comes from the necessity of more FP computational range to compute the average of the 'accumulator' boundary, on the other hand usually the average version performs better than the vanilla one.
+The Perceptron algorithm is a supervised learning algorithm invented by Frank Rosenblatt in 1957\cite{perceptron}. The goal of the predictor is to train a linear decision boundary on a set of labeled samples with the goal of classify unknown data in the future.
+The Perceptron is a mistake driven algorithm: once a sample is misclassified the predictor is updated (it does not mean that the sample now is correctly classified). The update step involves the weight vector, the main actor in the classification process.
+Particularly interesting in terms of FP analysis is one of the variant of the vanilla Perceptron: the average Perceptron. 
+The average Perceptron differs from the vanilla version because it maintains an average predictor weighted on the misclassification occurred until the current iteration.
 
-Also SVM algortihm produces a linear classifier but it differs from Perceptron in the the way the hyperplane is obtained. Indeed, SVM requires not only that the predictor learns from the training set, but it also aims for a safe margin between the linear separator and the closest points. For this reason it is learning by maximizing margin. It exists two versions of the classifier: (i) hard SVM means that no point are allowed to live between the linear separator and the margin and (ii) soft SVM allows that kind of points to exists and tries to minimize these points. The goal here is to maximize the 'safe' margin together with the correct classification of the training set.
+Also SVM algorithm produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. SVM is much restrictive that Perceptron because it aims for a safe margin between the linear separator and the closest points. We have implemented the soft version of SVM: (i) soft SVM means that points are allowed to exists between the linear separator and the margin. The goal is to maximize the 'safe' margin while minimizing the number of samples violating the margin.
 
 \section{Methodology}
 \subsection{Overview}
-Our work consists into re-implement these well known algorithms (Perceptron and SVM) using numerical library\cite{MPFR}\cite{softfloat} such that when a fp format is fixed, each fp instruction in the program is computed with that floating point format. The format (as for IEEE 754 single or double) indicates how many bit are assigned for mantissa and exponent representation.
-Our analysis starts by training the lowest possible configuration allowed: 2bits mantissa and 2bits exponent (we maintain 2 bits exponent because we want to simulate 1 bit sign and 1 bit value). 
-Once an exception happens (for dynamic range, the mantissa never produces exceptions) the procedure is stopped, the exponent is increased and the algorithm starts again. Each predictor has its own configuration.  
-\subsection{Reading, Training and Test}
-We decided to split each predictor in three different procedures: (i) reading (ii) training (iii) test. The goal of such division is to detect what is the relation 
-Rounding Mode        
-The first impact of our work is the detection of the precision to represent the dataset. 
-Most of the times the dataset contains discretized aspects of real characters. A key point is to determine how many bits should be used to represent/store these value in the dataset. Minimizing this precision, while still maintaining accurate values for the accuracy of predictors ($\frac{Correct.Classification}{Tot.classification}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and memory savage\cite{softfloat}. We call this parameter: Precision Dataset.
-Once the dataset is masked at the desired FP precision, the training of each algorithm starts independently. The training of the algorithm is limited by another bound named Precision Computation. Each operation involving the training phase is limited by the precision computation. In the results we will see that this bound significantly impacts on the accuracy of the predictors.
-At the end the last key point of the analysis is testing. In the same way of PD and PC the testing procedure is limited by the Precision Test. In the experiments on well known dataset we shown that test can be done using really poor precision, while still reaching valid results for accuracy.
-For each one explain what are its goals. 
-
-\newpage
+Our work consists in re-implementing Perceptron and SVM algorithms using numerical libraries MPFR\cite{MPFR} and \newline FlexFloat\cite{softfloat} such that each floating point instruction can be bounded by a desired floating point format. 
+These libraries allows the developer to simulate how many bit are assigned to mantissa and exponent for their representation.
+As a result our analysis spans lower format configurations allowed for mantissa representation. 
+In case of exception (only for dynamic range, a lack in precision for mantissa never produces exception) the procedure is stopped, the exponent is increased and the algorithm starts again. 
+\subsection{Reading, Training and Testing}
+We decide to split the lifetime of the predictor in three different procedures: (i) reading (ii) training (iii) testing. 
+The goal of such separation is to detect what are the dependencies between them. We want to stress the format used for each representation. 
+The first impact of our work is to detect a minimal threshold in the precision to adopt for the dataset representation. Minimizing this precision, while still maintaining accurate values for the accuracy of predictors ($\frac{Correct.Classification}{Tot.classification}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and memory savage\cite{softfloat}. 
+We call this parameter: Precision Dataset.
+Once the dataset is masked at the desired FP precision, the training procedure of each algorithm imports it independently. The precision used to compute the training is bounded by precision computing. The interface between reading and computing receives in input the dataset from the reading procedure and transform it to the bound decided by precision computing. 
+In the results we will se what is the impact of this parameter on a well known binary classification problem.
+At the end, the last key point of the analysis is the testing procedure. The testing procedure is limited by the precision test.
+%\newpage
 \section{Results}
-Our analysis is the implementation of Perceptron (average Variant) and SVM using MPFR\cite{MPFR} library. The code is developed using C++ language, and it is public available at LINK.
-To confirm the results of the analysis the same implementations are replicated using FlexFloat library \cite{softfloat}
-We have analyzed the following dataset: datasets.
-Dataset, MPFR, softfloat, hardware adopted, library for graphs. 
-Machine adopted.
-Show best result: 3 graphs with 5, 23, 51 bits.
+Our analysis consists in the implementation of Perceptron (average Variant) and SVM using MPFR\cite{MPFR} library. The code is developed using C++ language, and it is public available at LINK.
+To confirm the results of the analysis the same implementations are replicated using FlexFloat library \cite{softfloat}. We have analyzed the following dataset: datasets.
+The analysis is performed on a desktop machine with i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
+This graphs are obtained using matplotlib library on the accuracy output of the predictors.
 \begin{figure}[H]
-	\includegraphics[width=0.5\textwidth]{210}
-	\includegraphics[width=0.5\textwidth]{2310}
-	\includegraphics[width=0.5\textwidth]{5210}
+	\includegraphics[width=0.4\textwidth]{210}
+	\includegraphics[width=0.4\textwidth]{2310}
+	\includegraphics[width=0.4\textwidth]{5210}
 \end{figure}
-
-Provide just link to big datasets. 
-Discussion sub section of Results.
-\subsection{Discussion}
 
 %% Acknowledgments
 %\begin{acks}                            %% acks environment is optional

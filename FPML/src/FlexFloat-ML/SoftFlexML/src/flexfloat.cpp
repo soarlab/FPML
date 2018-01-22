@@ -23,6 +23,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string.hpp>
 #include <utility> 
+#include <sys/stat.h>
 
 #ifndef datasetMantissa
 	#define datasetMantissa 100
@@ -42,6 +43,7 @@
 #ifndef testExponent
 	#define testExponent 10
 #endif
+
 #ifndef analysis
 	#define analysis false
 #endif
@@ -70,9 +72,9 @@ vector<vector<flexfloat<datasetExponent,datasetMantissa>>> readData(vector<strin
 	for(int i=0;i<data.size();i++){
 		vector<string> strs={};
 		boost::split(strs,data[i],boost::is_any_of("\t "));
-		vector<flexfloat< datasetExponent,datasetMantissa>> tmp={};
+		vector<flexfloat<datasetExponent,datasetMantissa>> tmp={};
 		for(int j=0;j<strs.size()-1;j++){
-			tmp.push_back(atof(strs[j].c_str()));
+			tmp.push_back(stod(strs[j].c_str()));
 		}
 		dataset.push_back(tmp);
 	}
@@ -97,7 +99,7 @@ vector<flexfloat<datasetExponent,datasetMantissa>> readLabel(vector<string> &dat
 	for(int i=0;i<data.size();i++){
 		vector<string> strs={};
 		boost::split(strs,data[i],boost::is_any_of("\t "));
-		label.push_back(atof(strs.back().c_str()));
+		label.push_back(stod(strs.back().c_str()));
 	}
 	return label;
 }
@@ -202,28 +204,37 @@ void mapBestConfiguration(stringstream &myStream, map<string,vector<double>> &my
 		}
 	}
 }
-void printBestConfiguration(string label, map<string,vector<double>> &myMap){
+void printBestConfiguration(ofstream &confFile,string label, map<string,vector<double>> &myMap){
 	double max=0;
 	string best="";
 	for(map<string, vector<double> >::const_iterator it = myMap.begin(); it != myMap.end(); ++it) {
-		cout <<label<<" "<< it->first<< " ";
+		//cout <<label<<" "<< it->first<< " ";
 		double acc=0;
 		for(auto val:it->second){	
 			acc=acc+val;
-			cout<< to_string(val)<<" ";
+			//cout<< to_string(val)<<" ";
 		}
 		acc=acc/((it->second).size());
 		if (acc>max){
 			max=acc;
-			best=it->first+ " Acc:" + to_string(acc);	
+			best=it->first+ ",Acc:" + to_string(acc);	
 		}
-		cout <<label<<" Mean: "+to_string(acc)+"\n";
+		//cout <<label<<" Mean: "+to_string(acc)+"\n";
 	}
 	cout << label<<" Best: " << best<<"\n";
+	confFile<<label<<","<<best<<"\n";
 }
 
 
 int main(int argc, char* argv[]){
+	if (argc<2){
+		cout<<"Input the path of the folder. File names must be part1,part2,part3,part4"<<endl;
+		return 0;
+	}
+	if ((analysis) && (argc<9)){
+		cout<<"Parameters problem"<<endl;
+		return 0;
+	}
 	ofstream trainingSVM;
 	ofstream testSVM;
 	
@@ -235,8 +246,8 @@ int main(int argc, char* argv[]){
 	
 	vector<string> trainingData={};
 	vector<string> testData={};
-	string fileName="/home/roki/GIT/FPML/src/FlexFloat-ML/fourclass/fourclassProc";
-		
+	string fileName=argv[1];
+	
 	map<string,vector<double>> myMapTrainingSVM;
 	map<string,vector<double>> myMapTestSVM;
 	
@@ -245,47 +256,64 @@ int main(int argc, char* argv[]){
 	
 	map<string,vector<double>> myMapTrainingAP;
 	map<string,vector<double>> myMapTestAP;
-
-	vector<flexfloat<computationExponent, computationMantissa>> learningRates;
-	vector<flexfloat<computationExponent, computationMantissa>> CRegularizers;
-
-	vector<int> epochsVect;
+	
+	vector<flexfloat<computationExponent, computationMantissa>> learningRatesPerceptron;
+	vector<int> epochsVectPerceptron;
 		
+	vector<flexfloat<computationExponent, computationMantissa>> learningRatesAverage;
+	vector<int> epochsVectAverage;
+
+	vector<flexfloat<computationExponent, computationMantissa>> learningRatesSVM;
+	vector<flexfloat<computationExponent, computationMantissa>> CRegularizersSVM;
+	vector<int> epochsVectSVM;
+
 	if (!analysis){
-		learningRates={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
-		CRegularizers={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
-		epochsVect={1,5,10,20,30,50};
+		learningRatesPerceptron={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
+		epochsVectPerceptron={5,10,20};
+		
+		learningRatesAverage={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
+		epochsVectAverage={5,10,20};
+		
+		learningRatesSVM={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
+		epochsVectSVM={5,10,20};
+		CRegularizersSVM={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};	
+	}
+	
+	ofstream outConfFile;
+	if (!analysis){
+		outConfFile.open(fileName+"conf.txt");
 	}
 	
 	for (int i=1;i<5;i++){
-		trainingSVM.open (fileName+"SVMTrain"+to_string(i)+".txt",std::ofstream::app);
-		testSVM.open (fileName+"SVMTest"+to_string(i)+".txt",std::ofstream::app);
+		if (analysis){
+			trainingSVM.open(fileName+"FLEX/part"+to_string(i)+"SVMTrain.txt",std::ofstream::app);
+			testSVM.open(fileName+"FLEX/part"+to_string(i)+"SVMTest.txt",std::ofstream::app);
 		
-		trainingPerceptron.open (fileName+"PTrain"+to_string(i)+".txt",std::ofstream::app);
-		testPerceptron. open (fileName+"PTest"+to_string(i)+".txt",std::ofstream::app);
+			trainingPerceptron.open(fileName+"FLEX/part"+to_string(i)+"PTrain.txt",std::ofstream::app);
+			testPerceptron.open(fileName+"FLEX/part"+to_string(i)+"PTest.txt",std::ofstream::app);
 		
-		trainingAverage.open (fileName+"APTrain"+to_string(i)+".txt",std::ofstream::app);
-		testAverage.open (fileName+"APTest"+to_string(i)+".txt",std::ofstream::app);
-		
+			trainingAverage.open(fileName+"FLEX/part"+to_string(i)+"APTrain.txt",std::ofstream::app);
+			testAverage.open(fileName+"FLEX/part"+to_string(i)+"APTest.txt",std::ofstream::app);
+		}
 		trainingData={};
 		testData={};
 		for (int j=1;j<5;j++){
 			if (i!=j){
-				cout<<"Train:"+fileName+to_string(j)+".txt"<<endl;
-				vector<string> tmp=parseDataset(fileName+to_string(j)+".txt");
+				//cout<<"Train:"+fileName+"part"+to_string(j)+".txt"<<endl;
+				vector<string> tmp=parseDataset(fileName+"part"+to_string(j)+".txt");
 				for (int val=0;val<tmp.size();val++){
 					trainingData.push_back(tmp[val]);
 				}
 			}
 			else{
-				cout<<"Test:"+fileName+to_string(j)+".txt"<<endl;
-				vector<string> tmp=parseDataset(fileName+to_string(j)+".txt");
+				//cout<<"Test:"+fileName+"part"+to_string(j)+".txt"<<endl;
+				vector<string> tmp=parseDataset(fileName+"part"+to_string(j)+".txt");
 				for (int val=0;val<tmp.size();val++){
 					testData.push_back(tmp[val]);
 				}
 			}
 		}
-		cout<<endl;
+		//cout<<endl;
 		vector<vector<flexfloat<datasetExponent, datasetMantissa>>> matrix=readData(trainingData);
 		vector<flexfloat<datasetExponent, datasetMantissa>> label= readLabel(trainingData);
 		vector<vector<flexfloat<datasetExponent, datasetMantissa>>> matrixTest=readData(testData);
@@ -294,15 +322,15 @@ int main(int argc, char* argv[]){
 		shuffleData(matrixTest,labelTest);
 	
 		if (analysis){
-			learningRates={0.0001};
-			CRegularizers={10};
-			epochsVect={10};
+			learningRatesSVM={stod(argv[2])};//{0.0001};
+			CRegularizersSVM={stod(argv[3])};//argv[3];{10};
+			epochsVectSVM={stoi(argv[4])};//argv[4];{10};
 		}
-		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRates){
-			for(flexfloat<computationExponent, computationMantissa> &C:CRegularizers){
+		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesSVM){
+			for(flexfloat<computationExponent, computationMantissa> &C:CRegularizersSVM){
 				flexfloat<computationExponent, computationMantissa> updateLearningRate={0};
 				vector<flexfloat<computationExponent, computationMantissa>> weights(matrix[0].size(),0);
-				for(int epochs:epochsVect){
+				for(int epochs:epochsVectSVM){
 					for (int epoch=0;epoch<epochs;epoch++){
 						SVM(matrix,label,weights,C,learningRate);
 						shuffleData(matrix,label);
@@ -331,11 +359,11 @@ int main(int argc, char* argv[]){
 		}
 		
 		if (analysis){
-			learningRates={0.001};
-			epochsVect={20};
+			learningRatesPerceptron={stod(argv[5])};
+			epochsVectPerceptron={stoi(argv[6])};
 		}
-		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRates){
-			for(int epochs:epochsVect){
+		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesPerceptron){
+			for(int epochs:epochsVectPerceptron){
 				vector<flexfloat<computationExponent, computationMantissa>> weights(matrix[0].size(),0);
 				for (int epoch=0;epoch<epochs;epoch++){
 					Perceptron(matrix,label,weights,learningRate);
@@ -364,11 +392,11 @@ int main(int argc, char* argv[]){
 		}
 		
 		if (analysis){
-			learningRates={0.001};
-			epochsVect={20};
+			learningRatesAverage={stod(argv[7])};
+			epochsVectAverage={stoi(argv[8])};
 		}
-		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRates){		
-			for(int epochs:epochsVect){
+		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesAverage){		
+			for(int epochs:epochsVectAverage){
 				vector<flexfloat<computationExponent, computationMantissa>> weights(matrix[0].size(),0);
 				vector<flexfloat<computationExponent, computationMantissa>> averageWeights(matrix[0].size(),0);
 				double c=1.0;
@@ -376,10 +404,11 @@ int main(int argc, char* argv[]){
 					AveragePerceptron(matrix,averageWeights,c,label,weights,learningRate);
 					shuffleData(matrix,label);
 				}
-				
+				//cout<<c<<endl;
+				//cout<<flexfloat_as_double<<((flexfloat<computationExponent, computationMantissa>)c)<<endl;
 				c=1.0/c;
 				for (int index=0;index<weights.size();index++){
-					averageWeights[index]=weights[index]-(c*averageWeights[index]);
+					averageWeights[index]=weights[index]-(((flexfloat<computationExponent, computationMantissa>)c)*averageWeights[index]);
 				}
 
 				double accuracyTraining=testDataset(matrix,label,averageWeights);
@@ -402,26 +431,29 @@ int main(int argc, char* argv[]){
 				mapBestConfiguration(trainingString,myMapTestAP,accuracyTest);
 			}
 		}
-		trainingAverage.close();
-		testAverage.close();
+		if (analysis){
+			trainingAverage.close();
+			testAverage.close();
 		
-		trainingPerceptron.close();
-		testPerceptron.close();
+			trainingPerceptron.close();
+			testPerceptron.close();
 		
-		trainingSVM.close();
-		testSVM.close();
+			trainingSVM.close();
+			testSVM.close();
+		}
 	}
 	if (!analysis){
-		printBestConfiguration("SVM Train",myMapTrainingSVM);
-		cout<<"\n\n"<<endl;
-		printBestConfiguration("SVM Test",myMapTestSVM);
-		cout<<"\n\n"<<endl;
-		printBestConfiguration("Perceptron Train",myMapTrainingP);
-		cout<<"\n\n"<<endl;
-		printBestConfiguration("Perceptron Test",myMapTestP);
-		cout<<"\n\n"<<endl;
-		printBestConfiguration("Average Train",myMapTrainingAP);
-		cout<<"\n\n"<<endl;
-		printBestConfiguration("Average Test",myMapTestAP);
+		//printBestConfiguration("SVM Train",myMapTrainingSVM);
+		//cout<<"\n\n"<<endl;
+		printBestConfiguration(outConfFile,"SVM",myMapTestSVM);
+		//cout<<"\n\n"<<endl;
+		//printBestConfiguration("Perceptron Train",myMapTrainingP);
+		//cout<<"\n\n"<<endl;
+		printBestConfiguration(outConfFile,"Perceptron",myMapTestP);
+		//cout<<"\n\n"<<endl;
+		//printBestConfiguration("Average Train",myMapTrainingAP);
+		//cout<<"\n\n"<<endl;
+		printBestConfiguration(outConfFile,"Average",myMapTestAP);
+		outConfFile.close();
 	}
 }

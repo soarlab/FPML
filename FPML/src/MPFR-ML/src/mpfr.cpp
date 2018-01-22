@@ -8,18 +8,18 @@ static int ROUND;
 
 namespace std
 {
-template<>
-class default_delete<mpfr_t>
-{
-public:
-  void operator()(mpfr_t *ptr)
-  {
-	for(int i = 0; i < numElementsInRow; i++){
-		mpfr_clear(ptr[i]);
-	}
-	delete[] ptr;
-  }
-};
+	template<>
+	class default_delete<mpfr_t>
+	{
+	public:
+		void operator()(mpfr_t *ptr)
+		{
+			for(int i = 0; i < numElementsInRow; i++){
+				mpfr_clear(ptr[i]);
+			}
+			delete[] ptr;
+		}
+	};
 }
 
 void printMPFRvar(mpfr_t &var){
@@ -253,15 +253,12 @@ void updateWeights(unique_ptr<mpfr_t> &weights, vector<mpfr_t> &rowDataset,mpfr_
 
 void updateWeightsAverage(unique_ptr<mpfr_t> &weights, vector<mpfr_t> &rowDataset,mpfr_t &label,mpfr_t &learningRate,unique_ptr<mpfr_t> &averageWeights,long int &c){
 	mpfr_t tmp;
-	cout<<c<<endl;
 	mpfr_init2 (tmp, precComputation);
 	mpfr_set_d (tmp, 0, (mpfr_rnd_t)ROUND);
 
 	mpfr_t iterationAverage;
 	mpfr_init2 (iterationAverage, precComputation);
 	mpfr_set_si (iterationAverage, c, (mpfr_rnd_t)ROUND);
-
-	printMPFRvar(iterationAverage);
 
 	int res1=0;
 	int res2=0;
@@ -756,11 +753,12 @@ string cloneWeights(unique_ptr<mpfr_t> &destination,unique_ptr<mpfr_t> &source){
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
 	mpfr_clear_flags();
+
 	vector<string> trainingData;
 
-	string fileName="/home/roki/workspace/PerceptronMPFR/fourclass/fourclassS/fourclassProc";
+	string fileName=argv[1];//"/home/roki/workspace/PerceptronMPFR/fourclass/fourclassS/fourclassProc";
 
 	ofstream testPerceptron;
 	ofstream testAveragePerceptron;
@@ -772,7 +770,7 @@ int main() {
 
 	int mistakes;
 	int mistakeCheck;
-	int epochs;
+
 	mpfr_t learningRate;
 
 	unique_ptr<mpfr_t> weights;
@@ -788,312 +786,285 @@ int main() {
 	vector<mpfr_t> labelTest;
 
 	string separator="$";
-	string settingsData="";
-	string settingsComputationTraining="";
-	string settingsComputationTest="";
-	string settingsComputationPerceptronTraining="";
-	string settingsComputationAverageTraining="";
-	string settingsComputationSVM="";
+	string settingsDataset="";
+	string settingsComputation="";
+	string settingsTest="";
+
 	string exc="exc";
 	string numericExc="-1";
+	if (argc<15){
+		cout<<"Error parameters";
+		return 0;
+	}
 
-	vector<string> stringLearningRate;
-	vector<string> stringRegularizer;
+	int datasetMantissa=stoi(argv[9]);
+	int datasetExponent=stoi(argv[10]);
+	int computationMantissa=stoi(argv[11]);
+	int computationExponent=stoi(argv[12]);
+	int testMantissa=stoi(argv[13]);
+	int testExponent=stoi(argv[14]);
 
-	int precExponentData;
-	int precExponentTrainingSVM;
-	int precExponentTrainingPerceptron;
-	int precExponentTrainingAverage;
+	string learningRatePerceptron=argv[5];
+	int epochsPerceptron=stoi(argv[6]);
 
-	int precExponentTestSVM;
-	int precExponentTestPerceptron;
-	int precExponentTestAverage;
+	string learningRateAverage=argv[7];
+	int epochsAverage=stoi(argv[8]);
 
-	int upperLimitMantissa;
-	int lowerBoundMantissa;
-
-	int startExponent=5;
-
-	precExponentData=startExponent;
-	precExponentTrainingSVM=startExponent;
-	precExponentTrainingPerceptron=startExponent;
-	precExponentTrainingAverage=startExponent;
-	precExponentTestPerceptron=startExponent;
-	precExponentTestAverage=startExponent;
-	precExponentTestSVM=startExponent;
-
-
-	upperLimitMantissa=10;
-	lowerBoundMantissa=2;
-
-	epochs=10;
+	string learningRateSVM=argv[2];
+	string CRegularizerSVM=argv[3];
+	int epochsSVM=stoi(argv[4]);
 
 	ROUND=MPFR_RNDZ;
 
 	for (int i=1;i<5;i++){
-		trainingPerceptron.open (fileName+"P-Train"+to_string(i)+".txt");
-		trainingAveragePerceptron.open (fileName+"AP-Train"+to_string(i)+".txt");
-		testPerceptron.open (fileName+"P-Test"+to_string(i)+".txt");
-		testAveragePerceptron.open(fileName+"AP-Test"+to_string(i)+".txt");
-		trainingSVM.open(fileName+"SVM-Train"+to_string(i)+".txt");
-		testSVM.open(fileName+"SVM-Test"+to_string(i)+".txt");
+		trainingPerceptron.open (fileName+"MPFR/part"+to_string(i)+"PTrain.txt",std::ofstream::app);
+		trainingAveragePerceptron.open (fileName+"MPFR/part"+to_string(i)+"APTrain.txt",std::ofstream::app);
+		testPerceptron.open (fileName+"MPFR/part"+to_string(i)+"PTest.txt",std::ofstream::app);
+		testAveragePerceptron.open(fileName+"MPFR/part"+to_string(i)+"APTest.txt",std::ofstream::app);
+		trainingSVM.open(fileName+"MPFR/part"+to_string(i)+"SVMTrain.txt",std::ofstream::app);
+		testSVM.open(fileName+"MPFR/part"+to_string(i)+"SVMTest.txt",std::ofstream::app);
 
 		trainingData={};
 		for (int j=1;j<5;j++){
 			if (i!=j){
-				cout<<fileName+to_string(j)+".txt"<<endl;
-				vector<string>* tmp=readData(fileName+to_string(j)+".txt");
+				string partName=fileName+"part"+to_string(j)+".txt";
+				//cout<<partName<<endl;
+				vector<string>* tmp=readData(partName);
 				for (int val=0;val<tmp->size();val++){
 					trainingData.push_back((*tmp)[val]);
 				}
 				delete tmp;
 			}
 		}
-		int precDataset=lowerBoundMantissa;
-		while (precDataset<=upperLimitMantissa){
-			setExponentPrecision(precExponentData);
-			precComputation=precDataset;
-			try{
-				//START - DATASET 4 TRAIN
-				settingsComputationTraining="(N.R,N.R)";
-				settingsComputationTest="(N.R,N.R)";
-				settingsData="("+to_string(precDataset)+","+to_string(precExponentData) +")";
-				int numOfRows=trainingData.size();
 
-				dataset=vector<vector<mpfr_t>>(numOfRows);
-				label=vector<mpfr_t>(numOfRows);
-				builtDataset(dataset,trainingData);
-				builtLabel(label,trainingData);
-				//END - DATASET 4 TEST
+		try{
+			precComputation=datasetMantissa;
 
-				//START - DATASET 4 TEST
-				testData={};
-				tmp=readData(fileName+to_string(i)+".txt");
-				for (int val=0;val<tmp->size();val++){
-					testData.push_back((*tmp)[val]);
-				}
-				numOfRows=testData.size();
+			if (datasetMantissa>computationMantissa)
+				precComputation=computationMantissa;
+			if (datasetExponent>computationExponent)
+				datasetExponent=computationExponent;
 
-				datasetTest=vector<vector<mpfr_t>>(numOfRows);
-				labelTest=vector<mpfr_t>(numOfRows);
+			setExponentPrecision(datasetExponent);
 
-				builtDataset(datasetTest,testData);
-				builtLabel(labelTest,testData);
-				//END - DATASET 4 TEST
+			settingsComputation="(N.R,N.R)";
+			settingsTest="(N.R,N.R)";
+			settingsDataset="("+to_string(datasetMantissa)+","+to_string(datasetExponent) +")";
 
-				int precisionTraining=lowerBoundMantissa;
-				while (precisionTraining<=upperLimitMantissa){
-					precComputation=precisionTraining;
-					int l=0;
+			//START - DATASET 4 TRAIN
+			int numOfRows=trainingData.size();
+			dataset=vector<vector<mpfr_t>>(numOfRows);
+			label=vector<mpfr_t>(numOfRows);
+			builtDataset(dataset,trainingData);
+			builtLabel(label,trainingData);
+			//END - DATASET 4 TEST
 
-					vector<string> stringLearningRate={"0.001"};
-					while(l<stringLearningRate.size()){
-						//START-PERCEPTRON TRAINING
-						setExponentPrecision(precExponentTrainingPerceptron);
-						weights=initWeights();
-						settingsComputationPerceptronTraining="("+to_string(precComputation)+","+to_string(precExponentTrainingPerceptron)+")";
-						mpfr_init2 (learningRate, precComputation);
-						int res1=setMPFR(learningRate, stringLearningRate[l], 10);
-						if (res1!=0){
-							printToFile(trainingPerceptron, 7,settingsData,settingsComputationPerceptronTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(label.size()),"ACC:"+exc,string("Exp. Exc.for learning rate: "+stringLearningRate[l]));
-							precExponentTrainingPerceptron++;
-							continue;
-						}
-						string message=trainPerceptron(epochs, precExponentTrainingPerceptron, weights, dataset, label, learningRate);
-						if (message.size()!=0){
-							printToFile(trainingPerceptron, 7,settingsData,settingsComputationPerceptronTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(label.size()),"P:"+exc,message);
-							precExponentTrainingPerceptron++;
-							continue;
-						}
-						//END-PERCEPTRON TRAINING
-						//START-PERCEPTRON TEST
-						double trainingAccuracy=0;
-						setExponentPrecision(precExponentTrainingPerceptron);
-						trainingAccuracy=testPerceptronAndSVM(weights, dataset, label);
-						printToFile(trainingPerceptron, 7,settingsData,settingsComputationPerceptronTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(label.size()),"ACC:"+to_string(trainingAccuracy),string("N/A"));
-						//END-PERCEPTRON TEST
+			precComputation=datasetMantissa;
 
-						int precisionTest=lowerBoundMantissa;
+			if (datasetMantissa>testMantissa)
+				precComputation=testMantissa;
+			if (datasetExponent>testExponent)
+				datasetExponent=testExponent;
 
-						while (precisionTest<=upperLimitMantissa){
-							precComputation=precisionTest;
+			setExponentPrecision(datasetExponent);
 
-							settingsComputationTest="("+to_string(precComputation)+","+to_string(precExponentTestPerceptron)+")";
-							setExponentPrecision(precExponentTestPerceptron);
-
-							unique_ptr<mpfr_t> backupWeights=initWeights();
-							string res1=cloneWeights(backupWeights,weights);
-							if (res1.size()!=0){
-								printToFile(testPerceptron, 7,settingsData,settingsComputationPerceptronTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(labelTest.size()),"P:"+exc,res1);
-								precExponentTestPerceptron++;
-								continue;
-							}
-
-							float accuracy=-1;
-							try{
-								accuracy=testPerceptronAndSVM(backupWeights, datasetTest, labelTest);
-								printToFile(testPerceptron, 7,settingsData,settingsComputationPerceptronTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(labelTest.size()),"P:"+to_string(accuracy),string("N/A"));
-							}
-							catch(out_of_range& e){
-								printToFile(testPerceptron, 7,settingsData,settingsComputationPerceptronTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(labelTest.size()),"P:"+exc,string(e.what()));
-								precExponentTestPerceptron++;
-								continue;
-							}
-							precisionTest++;
-						}
-						settingsComputationTest="(N.R,N.R)";
-						l++;
-					}
-
-					precComputation=precisionTraining;
-					l=0;
-					stringLearningRate={"0.001"};
-					while(l<stringLearningRate.size()){
-
-						//START-AVERAGE PERCEPTRON
-						setExponentPrecision(precExponentTrainingAverage);
-						weightsForAverage=initWeights();
-						averageWeights=initWeights();
-						settingsComputationAverageTraining="("+to_string(precComputation)+","+to_string(precExponentTrainingAverage)+")";
-						mpfr_init2 (learningRate, precComputation);
-						int res1=setMPFR(learningRate, stringLearningRate[l], 10);
-						if (res1!=0){
-							printToFile(trainingAveragePerceptron, 7,settingsData,settingsComputationAverageTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(label.size()),"ACC:"+exc,string("Exp. Exc.for learning rate: "+stringLearningRate[l]));
-							precExponentTrainingAverage++;
-							continue;
-						}
-						string message="";
-						message=trainAveragePerceptron(epochs, precExponentTrainingAverage, weightsForAverage, averageWeights, dataset, label, learningRate);
-						if (message.size()!=0){
-							printToFile(trainingAveragePerceptron, 7,settingsData,settingsComputationAverageTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(label.size()),"AP:"+exc,string(message));
-							precExponentTrainingAverage++;
-							continue;
-						}
-						//END-AVERAGE PERCETRON
-						//START-PERCEPTRON AVERAGE TEST
-						int trainingAccuracy=0;
-						setExponentPrecision(precExponentTrainingAverage);
-						trainingAccuracy=testPerceptronAndSVM(averageWeights, dataset, label);
-						printToFile(trainingAveragePerceptron, 7,settingsData,settingsComputationAverageTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(label.size()),"ACC:"+to_string(trainingAccuracy),string("N/A"));
-
-						//END-PERCEPTRON AVERAGE TEST
-						int precisionTest=lowerBoundMantissa;
-						while (precisionTest<=upperLimitMantissa){
-							precComputation=precisionTest;
-
-							settingsComputationTest="("+to_string(precComputation)+","+to_string(precExponentTestAverage)+")";
-							setExponentPrecision(precExponentTestAverage);
-
-							unique_ptr<mpfr_t> backupAverageWeights=initWeights();
-							string res1=cloneWeights(backupAverageWeights, averageWeights);
-							if (res1.size()!=0){
-								printToFile(testAveragePerceptron, 7,settingsData,settingsComputationAverageTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(labelTest.size()),"AP:"+exc,res1);
-								precExponentTestAverage++;
-								continue;
-							}
-
-							float accuracy=-1;
-							try{
-								accuracy=testPerceptronAndSVM(backupAverageWeights, datasetTest, labelTest);
-								printToFile(testAveragePerceptron, 7,settingsData,settingsComputationAverageTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(labelTest.size()),"AP:"+to_string(accuracy),string("N/A"));
-							}
-							catch(out_of_range& e){
-								printToFile(testAveragePerceptron, 7,settingsData,settingsComputationAverageTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(labelTest.size()),"AP:"+exc,string(e.what()));
-								precExponentTestAverage++;
-								continue;
-							}
-							precisionTest++;
-						}
-						settingsComputationTest="(N.R,N.R)";
-						l++;
-					}
-
-					precComputation=precisionTraining;
-					l=0;
-					stringLearningRate={"0.001"};
-					while(l<stringLearningRate.size()){
-						//START-SVM TRAINING
-						int c=0;
-						stringRegularizer={"0.1"};
-						while (c<stringRegularizer.size()){
-							weightsSVM=initWeights();
-							settingsComputationSVM="("+to_string(precComputation)+","+to_string(precExponentTrainingSVM)+")";
-							setExponentPrecision(precExponentTrainingSVM);
-							mpfr_t regularizer;
-							mpfr_init2 (regularizer, precComputation);
-							int res1=setMPFR(regularizer, stringRegularizer[c], 10);
-							if (res1!=0){
-								printToFile(trainingSVM, 7,settingsData,settingsComputationSVM,settingsComputationTest,"LR:"+stringLearningRate[l]+"-C:"+stringRegularizer[c],to_string(label.size()),"ACC:"+exc,string("Exp. Exc.for regularizer: "+stringRegularizer[c]));
-								precExponentTrainingSVM++;
-								continue;
-							}
-							string message="";
-							message=trainSVM(epochs, precExponentTrainingSVM, weightsSVM, dataset, label, learningRate, regularizer);
-							if (message.size()!=0){
-								printToFile(trainingSVM, 7,settingsData,settingsComputationSVM,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(label.size()),"AP:"+exc,string(message));
-								precExponentTrainingSVM++;
-								continue;
-							}
-
-
-							//END-SVM TRAINING
-							//START-SVM TEST
-							float trainingAccuracy=0;
-							setExponentPrecision(precExponentTrainingSVM);
-							trainingAccuracy=testPerceptronAndSVM(weightsSVM, dataset, label);
-							printToFile(trainingSVM, 7,settingsData,settingsComputationAverageTraining,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(label.size()),"ACC:"+to_string(trainingAccuracy),string("N/A"));
-							//END-SVM TEST
-
-							int precisionTest=lowerBoundMantissa;
-							while (precisionTest<=upperLimitMantissa){
-								precComputation=precisionTest;
-
-								settingsComputationTest="("+to_string(precComputation)+","+to_string(precExponentTestSVM)+")";
-								setExponentPrecision(precExponentTestSVM);
-
-								unique_ptr<mpfr_t> backupWeightsSVM=initWeights();
-								string res1=cloneWeights(backupWeightsSVM, weightsSVM);
-								if (res1.size()!=0){
-									printToFile(testSVM, 7,settingsData,settingsComputationSVM,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(labelTest.size()),"SVM:"+exc,res1);
-									precExponentTestSVM++;
-									continue;
-								}
-
-								float accuracy=-1;
-								try{
-									accuracy=testPerceptronAndSVM(backupWeightsSVM, datasetTest, labelTest);
-									printToFile(testSVM, 7,settingsData,settingsComputationSVM,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(labelTest.size()),"SVM:"+to_string(accuracy),string("N/A"));
-								}
-								catch(out_of_range& e){
-									printToFile(testSVM, 7,settingsData,settingsComputationSVM,settingsComputationTest,"LR:"+stringLearningRate[l],to_string(labelTest.size()),"SVM:"+exc,string(e.what()));
-									precExponentTestSVM++;
-									continue;
-								}
-								precisionTest++;
-							}
-							c++;
-						}
-						settingsComputationTest="(N.R,N.R)";
-						l++;
-					}
-					precisionTraining++;
-				}
-				delete tmp;
-				mpfr_clear(learningRate);
-
-				clearDatasetLabel(datasetTest,labelTest);
-
-				clearDatasetLabel(dataset, label);
-				precDataset++;
+			//START - DATASET 4 TEST
+			testData={};
+			string partName=fileName+"part"+to_string(i)+".txt";
+			tmp=readData(partName);
+			for (int val=0;val<tmp->size();val++){
+				testData.push_back((*tmp)[val]);
 			}
-			catch(out_of_range& e){
-				printToFile(testPerceptron, 7,settingsData,settingsComputationTraining,settingsComputationTest,"LR:"+exc,numericExc,"P:"+exc,string(e.what()));
-				printToFile(trainingPerceptron, 7,settingsData,settingsComputationTraining,settingsComputationTest,"LR:"+exc,numericExc,"P:"+exc,string(e.what()));
-				printToFile(testAveragePerceptron, 7,settingsData,settingsComputationTraining,settingsComputationTest,"LR:"+exc,numericExc,"AP:"+exc,string(e.what()));
-				printToFile(trainingAveragePerceptron, 7,settingsData,settingsComputationTraining,settingsComputationTest,"LR:"+exc,numericExc,"AP:"+exc,string(e.what()));
-				precExponentData=precExponentData+1;
-			}
+			numOfRows=testData.size();
+			datasetTest=vector<vector<mpfr_t>>(numOfRows);
+			labelTest=vector<mpfr_t>(numOfRows);
+			builtDataset(datasetTest,testData);
+			builtLabel(labelTest,testData);
+			//END - DATASET 4 TEST
 		}
+		catch(out_of_range& e){
+			printToFile(testPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+exc,numericExc,"P:"+exc,string(e.what()));
+			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+exc,numericExc,"P:"+exc,string(e.what()));
+
+			printToFile(testAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+exc,numericExc,"AP:"+exc,string(e.what()));
+			printToFile(trainingAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+exc,numericExc,"AP:"+exc,string(e.what()));
+
+			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+exc,numericExc,"SVM:"+exc,string(e.what()));
+			printToFile(testSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+exc,numericExc,"SVM:"+exc,string(e.what()));
+
+			continue;
+		}
+
+		//START-TRAINING PERCEPTRON
+		precComputation=computationMantissa;
+		setExponentPrecision(computationExponent);
+
+		weights=initWeights();
+		settingsComputation="("+to_string(precComputation)+","+to_string(computationExponent)+")";
+
+		mpfr_init2 (learningRate, precComputation);
+		int res1=setMPFR(learningRate, learningRatePerceptron, 10);
+		if (res1!=0){
+			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(label.size()),"P:"+exc,string("Exp. Exc.for learning rate: "+learningRatePerceptron));
+		}
+
+		string message=trainPerceptron(epochsPerceptron, computationExponent, weights, dataset, label, learningRate);
+		if (message.size()!=0){
+			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(label.size()),"P:"+exc,message);
+		}
+		//END-PERCEPTRON TRAINING
+
+		//START-PERCEPTRON TEST
+		precComputation=testMantissa;
+		setExponentPrecision(testExponent);
+
+		settingsTest="("+to_string(precComputation)+","+to_string(testExponent)+")";
+		unique_ptr<mpfr_t> backupWeights=initWeights();
+
+		string res2=cloneWeights(backupWeights,weights);
+		if (res2.size()!=0){
+			printToFile(testPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(labelTest.size()),"P:"+exc,res1);
+		}
+
+		try{
+			double trainingAccuracy=testPerceptronAndSVM(backupWeights, dataset, label);
+			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(label.size()),"P:"+to_string(trainingAccuracy),string("N/A"));
+		}
+		catch(out_of_range& e){
+			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(labelTest.size()),"P:"+exc,string(e.what()));
+		}
+
+		try{
+			double accuracy=testPerceptronAndSVM(backupWeights, datasetTest, labelTest);
+			printToFile(testPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(labelTest.size()),"P:"+to_string(accuracy),string("N/A"));
+		}
+		catch(out_of_range& e){
+			printToFile(testPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(labelTest.size()),"P:"+exc,string(e.what()));
+		}
+		//END-PERCEPTRON TEST
+
+		//START-AVERAGE PERCEPTRON
+		settingsComputation="(N.R,N.R)";
+		settingsTest="(N.R,N.R)";
+
+		precComputation=computationMantissa;
+		setExponentPrecision(computationExponent);
+
+		weightsForAverage=initWeights();
+		averageWeights=initWeights();
+
+		settingsComputation="("+to_string(precComputation)+","+to_string(computationExponent)+")";
+
+		mpfr_init2 (learningRate, precComputation);
+		res1=setMPFR(learningRate, learningRateAverage, 10);
+		if (res1!=0){
+			printToFile(trainingAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(label.size()),"ACC:"+exc,string("Exp. Exc.for learning rate: "+learningRateAverage));
+		}
+		message="";
+		message=trainAveragePerceptron(epochsAverage,computationExponent, weightsForAverage, averageWeights, dataset, label, learningRate);
+		if (message.size()!=0){
+			printToFile(trainingAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(label.size()),"AP:"+exc,string(message));
+		}
+		//END-AVERAGE PERCETRON
+
+		//START-PERCEPTRON AVERAGE TEST
+		precComputation=testMantissa;
+		setExponentPrecision(testExponent);
+
+		settingsTest="("+to_string(testMantissa)+","+to_string(testExponent)+")";
+
+		unique_ptr<mpfr_t> backupAverageWeights=initWeights();
+		res2=cloneWeights(backupAverageWeights, averageWeights);
+		if (res2.size()!=0){
+			printToFile(testAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(labelTest.size()),"AP:"+exc,res1);
+		}
+
+		double trainingAccuracy=-1;
+		try{
+			trainingAccuracy=testPerceptronAndSVM(backupAverageWeights, dataset, label);
+			printToFile(trainingAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(label.size()),"ACC:"+to_string(trainingAccuracy),string("N/A"));
+		}
+		catch(out_of_range& e){
+			printToFile(trainingAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(label.size()),"AP:"+exc,string(e.what()));
+		}
+
+		double accuracy=-1;
+		try{
+			accuracy=testPerceptronAndSVM(backupAverageWeights, datasetTest, labelTest);
+			printToFile(testAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(labelTest.size()),"AP:"+to_string(accuracy),string("N/A"));
+		}
+		catch(out_of_range& e){
+			printToFile(testAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(labelTest.size()),"AP:"+exc,string(e.what()));
+
+		}
+		//END-PERCEPTRON AVERAGE TEST
+
+		//START-SVM TRAINING
+		settingsComputation="(N.R,N.R)";
+		settingsTest="(N.R,N.R)";
+
+		precComputation=computationMantissa;
+		setExponentPrecision(computationExponent);
+
+		weightsSVM=initWeights();
+		settingsComputation="("+to_string(computationMantissa)+","+to_string(computationExponent)+")";
+
+		mpfr_init2 (learningRate, precComputation);
+		int res3=setMPFR(learningRate, learningRateSVM, 10);
+		if (res3!=0){
+			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM+"-C:"+CRegularizerSVM,to_string(label.size()),"SVM:"+exc,string("Exp. Exc.for learning rate: "+learningRateSVM));
+		}
+
+		mpfr_t regularizer;
+		mpfr_init2 (regularizer, precComputation);
+		int res4=setMPFR(regularizer, CRegularizerSVM, 10);
+		if (res4!=0){
+			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM+"-C:"+CRegularizerSVM,to_string(label.size()),"SVM:"+exc,string("Exp. Exc.for regularizer: "+CRegularizerSVM));
+		}
+
+		message=trainSVM(epochsSVM, computationExponent, weightsSVM, dataset, label, learningRate, regularizer);
+		if (message.size()!=0){
+			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(label.size()),"SVM:"+exc,string(message));
+		}
+		//END-SVM TRAINING
+
+		//START-SVM TEST
+		precComputation=testMantissa;
+		setExponentPrecision(testExponent);
+
+		settingsTest="("+to_string(precComputation)+","+to_string(testExponent)+")";
+
+		unique_ptr<mpfr_t> backupWeightsSVM=initWeights();
+		string res5=cloneWeights(backupWeightsSVM, weightsSVM);
+		if (res5.size()!=0){
+			printToFile(testSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(labelTest.size()),"SVM:"+exc,res1);
+		}
+
+		accuracy=-1;
+		try{
+			accuracy=testPerceptronAndSVM(backupWeightsSVM, dataset, label);
+			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(label.size()),"SVM:"+to_string(accuracy),string("N/A"));
+		}
+		catch(out_of_range& e){
+			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(label.size()),"SVM:"+exc,string(e.what()));
+		}
+
+		accuracy=-1;
+		try{
+			accuracy=testPerceptronAndSVM(backupWeightsSVM, datasetTest, labelTest);
+			printToFile(testSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(labelTest.size()),"SVM:"+to_string(accuracy),string("N/A"));
+		}
+		catch(out_of_range& e){
+			printToFile(testSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(labelTest.size()),"SVM:"+exc,string(e.what()));
+		}
+
+		delete tmp;
+		mpfr_clear(learningRate);
+
+		clearDatasetLabel(datasetTest,labelTest);
+
+		clearDatasetLabel(dataset, label);
+
 		testPerceptron.close();
 		testAveragePerceptron.close();
 		trainingPerceptron.close();
