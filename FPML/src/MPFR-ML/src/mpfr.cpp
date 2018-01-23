@@ -94,7 +94,7 @@ string evaluateRes(int res){
 void throwExcExponent(int n,string message){
 	if (n!=0){
 		string ret=evaluateRes(n);
-		throw out_of_range(message+", Exception:"+ret+", Exp.Range:"+to_string(mpfr_get_emin())+", "+to_string(mpfr_get_emax()));//ERANGE: one of the operand is not a number;
+		throw out_of_range(message+", Exc:"+ret+", Exp.Range:"+to_string(mpfr_get_emin())+", "+to_string(mpfr_get_emax()));//ERANGE: one of the operand is not a number;
 	}
 }
 
@@ -188,7 +188,7 @@ void myDotProduct(unique_ptr<mpfr_t> &weights,vector<mpfr_t> &x, mpfr_t &tot){
 	}
 	if (!go_on){
 		mpfr_clear_flags();
-		throwExcExponent(1,"Dot Product Parallel Exception");
+		throwExcExponent(1,"DotProd. Parall. Exc");
 	}
 }
 
@@ -232,19 +232,19 @@ void updateWeights(unique_ptr<mpfr_t> &weights, vector<mpfr_t> &rowDataset,mpfr_
 		if (res1!=0){
 			string val1=printExcValue(rowDataset[i]);
 			string val2=printExcValue(label);
-			throwExcExponent(res1, "(1)Exp. Exc. updating weights, value1: "+val1+ ", value2: "+val2);
+			throwExcExponent(res1, "(1)Exp. Exc. upd. weights, value1: "+val1+ ", value2: "+val2);
 		}
 		save1=printExcValue(tmp);
 		res2=mulMPFR(tmp,tmp,learningRate);
 		if (res2!=0){
 			string val2=printExcValue(learningRate);
-			throwExcExponent(res2, "(2)Exp. Exc. updating weights, value1: "+save1+ ", value2: "+val2);
+			throwExcExponent(res2, "(2)Exp. Exc. upd. weights, value1: "+save1+ ", value2: "+val2);
 		}
 		save2=printExcValue(weights.get()[i]);
 		res3=addMPFR(weights.get()[i], weights.get()[i], tmp);
 		if (res3!=0){
 			string val2=printExcValue(tmp);
-			throwExcExponent(res3, "(3)Exp. Exc. updating weights, value1: "+save2+ ", value2: "+val2);
+			throwExcExponent(res3, "(3)Exp. Exc. upd. weights, value1: "+save2+ ", value2: "+val2);
 		}
 		mpfr_set_d (tmp, 0, (mpfr_rnd_t)ROUND);
 	}
@@ -277,19 +277,19 @@ void updateWeightsAverage(unique_ptr<mpfr_t> &weights, vector<mpfr_t> &rowDatase
 		if (res1!=0){
 			string val1=printExcValue(rowDataset[i]);
 			string val2=printExcValue(label);
-			throwExcExponent(res1, "(1 AP)Exp. Exc. updating weights, value1: "+val1+ ", value2: "+val2);
+			throwExcExponent(res1, "(1 AP)Exp. Exc. upd. weights, value1: "+val1+ ", value2: "+val2);
 		}
 		save1=printExcValue(tmp);
 		res2=mulMPFR(tmp,tmp,learningRate);
 		if (res2!=0){
 			string val2=printExcValue(learningRate);
-			throwExcExponent(res2, "(2 AP)Exp. Exc. updating weights, value1: "+save1+ ", value2: "+val2);
+			throwExcExponent(res2, "(2 AP)Exp. Exc. upd. weights, value1: "+save1+ ", value2: "+val2);
 		}
 		save2=printExcValue(weights.get()[i]);
 		res3=addMPFR(weights.get()[i], weights.get()[i], tmp);
 		if (res3!=0){
 			string val2=printExcValue(tmp);
-			throwExcExponent(res3, "(3 AP)Exp. Exc. updating weights, value1: "+save2+ ", value2: "+val2);
+			throwExcExponent(res3, "(3 AP)Exp. Exc. upd. weights, value1: "+save2+ ", value2: "+val2);
 		}
 		///////////////
 		//average
@@ -298,7 +298,7 @@ void updateWeightsAverage(unique_ptr<mpfr_t> &weights, vector<mpfr_t> &rowDatase
 		//printMPFRvar(iterationAverage);
 		res4=mulMPFR(tmp,iterationAverage,tmp);
 		if (res4!=0){
-			throwExcExponent(res3, "(4 AP)Exp. Exc. updating average weights, value1: "+to_string(c)+ ", value2: "+save1);
+			throwExcExponent(res3, "(4 AP)Exp. Exc. upd. average weights, value1: "+to_string(c)+ ", value2: "+save1);
 		}
 		//printMPFRvar(tmp);
 		//printWeightDecimal(averageWeights, numElementsInRow);
@@ -307,7 +307,7 @@ void updateWeightsAverage(unique_ptr<mpfr_t> &weights, vector<mpfr_t> &rowDatase
 		//printWeightDecimal(averageWeights, numElementsInRow);
 		if (res5!=0){
 			string val2=printExcValue(tmp);
-			throwExcExponent(res3, "(5 AP)Exp. Exc. updating average weights, value1: "+save3+ ", value2: "+val2);
+			throwExcExponent(res3, "(5 AP)Exp. Exc. upd. average weights, value1: "+save3+ ", value2: "+val2);
 		}
 		////////////////
 		////////////////
@@ -383,7 +383,7 @@ double testPerceptronAndSVM(unique_ptr<mpfr_t> &weights,vector<vector<mpfr_t>> &
 		myDotProduct(weights,dataset[i],dotProduct);
 		res1=mulMPFR(dotProduct, label[i], dotProduct);
 		if (res1!=0){
-			throwExcExponent(res1, "Exponent exception while computing test: ");
+			throwExcExponent(res1, "Exp. Exc. while computing test: ");
 		}
 		if (mpfr_cmp_d (dotProduct, 0.0)<=0){
 			mistakes++;
@@ -460,7 +460,7 @@ void builtDataset(vector<vector<mpfr_t>> &dataset, vector<string> &data){
 			mpfr_init2 (dataset[i][j],precComputation);
 			res1=setMPFR(dataset[i][j], ((*tmp)[j]), 10);
 			if (res1!=0){
-				throwExcExponent(res1, "Exponent exception while reading dataset: "+to_string(res1)+", Row:"+to_string(i)+", value:"+((*tmp)[j]).c_str());
+				throwExcExponent(res1, "Exp. Exc. while reading dataset (Train or Test): "+to_string(res1)+", Row:"+to_string(i)+", value:"+((*tmp)[j]).c_str());
 			}
 			string val=(*tmp)[j];
 			if(atof(val.c_str())<min && j<=numOfAttributes){
@@ -484,7 +484,7 @@ void builtLabel(vector<mpfr_t> &label, vector<string> &data){
 		mpfr_init2 (label[i],precComputation);
 		res1=setMPFR(label[i], tmp->back(), 10);
 		if (res1!=0){
-			throwExcExponent(res1, "Exponent exception while building label dataset: ");
+			throwExcExponent(res1, "Exp. Exc. while building label dataset: ");
 		}
 		tmp->clear();
 		delete tmp;
@@ -567,42 +567,42 @@ void updateWeightsSVMMistakes(unique_ptr<mpfr_t> &weights, vector<mpfr_t> &rowDa
 
 		res1=mulMPFR(tmp,rowDataset[i],label);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Wrong.1) Exp. Exc. updating weights, value1: "+printExcValue(rowDataset[i])+ ", value2: "+printExcValue(label));
+			throwExcExponent(res1, "(SVM-Update-Wrong.1) Exp. Exc. upd. weights, value1: "+printExcValue(rowDataset[i])+ ", value2: "+printExcValue(label));
 		}
 
 		save1=printExcValue(tmp);
 		res1=mulMPFR(tmp,tmp,regularizer);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Wrong.2) Exp. Exc. updating weights, value1: "+save1+ ", value2: "+printExcValue(regularizer));
+			throwExcExponent(res1, "(SVM-Update-Wrong.2) Exp. Exc. upd. weights, value1: "+save1+ ", value2: "+printExcValue(regularizer));
 		}
 
 		save1=printExcValue(tmp);
 		res1=mulMPFR(tmp, tmp,updateLR);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Wrong.3) Exp. Exc. updating weights, value1: "+save1+ ", value2: "+printExcValue(updateLR));
+			throwExcExponent(res1, "(SVM-Update-Wrong.3) Exp. Exc. upd. weights, value1: "+save1+ ", value2: "+printExcValue(updateLR));
 		}
 
 		save1=printExcValue(one);
 		res1=subMPFR(one, one, updateLR);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Wrong.4) Exp. Exc. updating weights, value1: "+save1+ ", value2: "+printExcValue(updateLR));
+			throwExcExponent(res1, "(SVM-Update-Wrong.4) Exp. Exc. upd. weights, value1: "+save1+ ", value2: "+printExcValue(updateLR));
 		}
 
 		save1=printExcValue(one);
 		res1=mulMPFR(one, one,weights.get()[i]);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Wrong.5) Exp. Exc. updating weights, value1: "+save1+ ", value2: "+printExcValue(weights.get()[i]));
+			throwExcExponent(res1, "(SVM-Update-Wrong.5) Exp. Exc. upd. weights, value1: "+save1+ ", value2: "+printExcValue(weights.get()[i]));
 		}
 
 		save1=printExcValue(tmp);
 		res1=addMPFR(tmp, tmp,one);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Wrong.6) Exp. Exc. updating weights, value1: "+save1+ ", value2: "+printExcValue(one));
+			throwExcExponent(res1, "(SVM-Update-Wrong.6) Exp. Exc. upd. weights, value1: "+save1+ ", value2: "+printExcValue(one));
 		}
 
 		res1=setMPFR(weights.get()[i],tmp);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Wrong.7) Exp. Exc. updating weights, value1: "+printExcValue(tmp));
+			throwExcExponent(res1, "(SVM-Update-Wrong.7) Exp. Exc. upd. weights, value1: "+printExcValue(tmp));
 		}
 
 		res1=setMPFR(one, "1.0", 10);
@@ -632,18 +632,18 @@ void updateWeightsSVMCorrect(unique_ptr<mpfr_t> &weights,mpfr_t &updateLR){
 		save1=printExcValue(one);
 		res1=subMPFR(one, one, updateLR);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Corr.1) Exp. Exc. updating weights, value1: "+save1+ ", value2: "+printExcValue(updateLR));
+			throwExcExponent(res1, "(SVM-Update-Corr.1) Exp. Exc. upd. weights, value1: "+save1+ ", value2: "+printExcValue(updateLR));
 		}
 
 		save1=printExcValue(one);
 		res1=mulMPFR(one, one,weights.get()[i]);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Corr.2) Exp. Exc. updating weights, value1: "+save1+ ", value2: "+printExcValue(weights.get()[i]));
+			throwExcExponent(res1, "(SVM-Update-Corr.2) Exp. Exc. upd. weights, value1: "+save1+ ", value2: "+printExcValue(weights.get()[i]));
 		}
 
 		res1=setMPFR(weights.get()[i],one);
 		if (res1!=0){
-			throwExcExponent(res1, "(SVM-Update-Corr.3) Exp. Exc. updating weights, value1: "+printExcValue(one));
+			throwExcExponent(res1, "(SVM-Update-Corr.3) Exp. Exc. upd. weights, value1: "+printExcValue(one));
 		}
 
 		res1=setMPFR(one, "1.0", 10);
@@ -758,7 +758,7 @@ int main(int argc, char* argv[]) {
 
 	vector<string> trainingData;
 
-	string fileName=argv[1];//"/home/roki/workspace/PerceptronMPFR/fourclass/fourclassS/fourclassProc";
+	string fileName=argv[1];
 
 	ofstream testPerceptron;
 	ofstream testAveragePerceptron;
@@ -816,6 +816,10 @@ int main(int argc, char* argv[]) {
 
 	ROUND=MPFR_RNDZ;
 
+	settingsComputation="("+to_string(computationMantissa)+","+to_string(computationExponent) +")";
+	settingsTest="("+to_string(testMantissa)+","+to_string(testExponent) +")";
+	settingsDataset="("+to_string(datasetMantissa)+","+to_string(datasetExponent) +")";
+
 	for (int i=1;i<5;i++){
 		trainingPerceptron.open (fileName+"MPFR/part"+to_string(i)+"PTrain.txt",std::ofstream::app);
 		trainingAveragePerceptron.open (fileName+"MPFR/part"+to_string(i)+"APTrain.txt",std::ofstream::app);
@@ -838,18 +842,15 @@ int main(int argc, char* argv[]) {
 		}
 
 		try{
-			precComputation=datasetMantissa;
-
 			if (datasetMantissa>computationMantissa)
 				precComputation=computationMantissa;
+			else
+				precComputation=datasetMantissa;
+
 			if (datasetExponent>computationExponent)
-				datasetExponent=computationExponent;
-
-			setExponentPrecision(datasetExponent);
-
-			settingsComputation="(N.R,N.R)";
-			settingsTest="(N.R,N.R)";
-			settingsDataset="("+to_string(datasetMantissa)+","+to_string(datasetExponent) +")";
+				setExponentPrecision(computationExponent);
+			else
+				setExponentPrecision(datasetExponent);
 
 			//START - DATASET 4 TRAIN
 			int numOfRows=trainingData.size();
@@ -859,14 +860,15 @@ int main(int argc, char* argv[]) {
 			builtLabel(label,trainingData);
 			//END - DATASET 4 TEST
 
-			precComputation=datasetMantissa;
-
 			if (datasetMantissa>testMantissa)
 				precComputation=testMantissa;
-			if (datasetExponent>testExponent)
-				datasetExponent=testExponent;
+			else
+				precComputation=datasetMantissa;
 
-			setExponentPrecision(datasetExponent);
+			if (datasetExponent>testExponent)
+				setExponentPrecision(testExponent);
+			else
+				setExponentPrecision(datasetExponent);
 
 			//START - DATASET 4 TEST
 			testData={};
@@ -892,22 +894,25 @@ int main(int argc, char* argv[]) {
 			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+exc,numericExc,"SVM:"+exc,string(e.what()));
 			printToFile(testSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+exc,numericExc,"SVM:"+exc,string(e.what()));
 
+			testPerceptron.close();
+			testAveragePerceptron.close();
+			trainingPerceptron.close();
+			trainingAveragePerceptron.close();
+			testSVM.close();
+			trainingSVM.close();
+
 			continue;
 		}
 
 		//START-TRAINING PERCEPTRON
 		precComputation=computationMantissa;
 		setExponentPrecision(computationExponent);
-
 		weights=initWeights();
-		settingsComputation="("+to_string(precComputation)+","+to_string(computationExponent)+")";
-
 		mpfr_init2 (learningRate, precComputation);
 		int res1=setMPFR(learningRate, learningRatePerceptron, 10);
 		if (res1!=0){
 			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(label.size()),"P:"+exc,string("Exp. Exc.for learning rate: "+learningRatePerceptron));
 		}
-
 		string message=trainPerceptron(epochsPerceptron, computationExponent, weights, dataset, label, learningRate);
 		if (message.size()!=0){
 			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(label.size()),"P:"+exc,message);
@@ -918,14 +923,12 @@ int main(int argc, char* argv[]) {
 		precComputation=testMantissa;
 		setExponentPrecision(testExponent);
 
-		settingsTest="("+to_string(precComputation)+","+to_string(testExponent)+")";
 		unique_ptr<mpfr_t> backupWeights=initWeights();
-
 		string res2=cloneWeights(backupWeights,weights);
 		if (res2.size()!=0){
-			printToFile(testPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(labelTest.size()),"P:"+exc,res1);
+			printToFile(testPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(labelTest.size()),"P:"+exc,res2);
+			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(labelTest.size()),"P:"+exc,res2);
 		}
-
 		try{
 			double trainingAccuracy=testPerceptronAndSVM(backupWeights, dataset, label);
 			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(label.size()),"P:"+to_string(trainingAccuracy),string("N/A"));
@@ -933,7 +936,6 @@ int main(int argc, char* argv[]) {
 		catch(out_of_range& e){
 			printToFile(trainingPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(labelTest.size()),"P:"+exc,string(e.what()));
 		}
-
 		try{
 			double accuracy=testPerceptronAndSVM(backupWeights, datasetTest, labelTest);
 			printToFile(testPerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRatePerceptron,to_string(labelTest.size()),"P:"+to_string(accuracy),string("N/A"));
@@ -944,17 +946,11 @@ int main(int argc, char* argv[]) {
 		//END-PERCEPTRON TEST
 
 		//START-AVERAGE PERCEPTRON
-		settingsComputation="(N.R,N.R)";
-		settingsTest="(N.R,N.R)";
-
 		precComputation=computationMantissa;
 		setExponentPrecision(computationExponent);
 
 		weightsForAverage=initWeights();
 		averageWeights=initWeights();
-
-		settingsComputation="("+to_string(precComputation)+","+to_string(computationExponent)+")";
-
 		mpfr_init2 (learningRate, precComputation);
 		res1=setMPFR(learningRate, learningRateAverage, 10);
 		if (res1!=0){
@@ -971,14 +967,12 @@ int main(int argc, char* argv[]) {
 		precComputation=testMantissa;
 		setExponentPrecision(testExponent);
 
-		settingsTest="("+to_string(testMantissa)+","+to_string(testExponent)+")";
-
 		unique_ptr<mpfr_t> backupAverageWeights=initWeights();
 		res2=cloneWeights(backupAverageWeights, averageWeights);
 		if (res2.size()!=0){
-			printToFile(testAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(labelTest.size()),"AP:"+exc,res1);
+			printToFile(testAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(labelTest.size()),"AP:"+exc,res2);
+			printToFile(trainingAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(labelTest.size()),"AP:"+exc,res2);
 		}
-
 		double trainingAccuracy=-1;
 		try{
 			trainingAccuracy=testPerceptronAndSVM(backupAverageWeights, dataset, label);
@@ -987,7 +981,6 @@ int main(int argc, char* argv[]) {
 		catch(out_of_range& e){
 			printToFile(trainingAveragePerceptron, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateAverage,to_string(label.size()),"AP:"+exc,string(e.what()));
 		}
-
 		double accuracy=-1;
 		try{
 			accuracy=testPerceptronAndSVM(backupAverageWeights, datasetTest, labelTest);
@@ -1000,28 +993,21 @@ int main(int argc, char* argv[]) {
 		//END-PERCEPTRON AVERAGE TEST
 
 		//START-SVM TRAINING
-		settingsComputation="(N.R,N.R)";
-		settingsTest="(N.R,N.R)";
-
 		precComputation=computationMantissa;
 		setExponentPrecision(computationExponent);
 
 		weightsSVM=initWeights();
-		settingsComputation="("+to_string(computationMantissa)+","+to_string(computationExponent)+")";
-
 		mpfr_init2 (learningRate, precComputation);
 		int res3=setMPFR(learningRate, learningRateSVM, 10);
 		if (res3!=0){
 			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM+"-C:"+CRegularizerSVM,to_string(label.size()),"SVM:"+exc,string("Exp. Exc.for learning rate: "+learningRateSVM));
 		}
-
 		mpfr_t regularizer;
 		mpfr_init2 (regularizer, precComputation);
 		int res4=setMPFR(regularizer, CRegularizerSVM, 10);
 		if (res4!=0){
 			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM+"-C:"+CRegularizerSVM,to_string(label.size()),"SVM:"+exc,string("Exp. Exc.for regularizer: "+CRegularizerSVM));
 		}
-
 		message=trainSVM(epochsSVM, computationExponent, weightsSVM, dataset, label, learningRate, regularizer);
 		if (message.size()!=0){
 			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(label.size()),"SVM:"+exc,string(message));
@@ -1032,14 +1018,12 @@ int main(int argc, char* argv[]) {
 		precComputation=testMantissa;
 		setExponentPrecision(testExponent);
 
-		settingsTest="("+to_string(precComputation)+","+to_string(testExponent)+")";
-
 		unique_ptr<mpfr_t> backupWeightsSVM=initWeights();
 		string res5=cloneWeights(backupWeightsSVM, weightsSVM);
 		if (res5.size()!=0){
-			printToFile(testSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(labelTest.size()),"SVM:"+exc,res1);
+			printToFile(testSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(labelTest.size()),"SVM:"+exc,res5);
+			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(labelTest.size()),"SVM:"+exc,res5);
 		}
-
 		accuracy=-1;
 		try{
 			accuracy=testPerceptronAndSVM(backupWeightsSVM, dataset, label);
@@ -1060,11 +1044,8 @@ int main(int argc, char* argv[]) {
 
 		delete tmp;
 		mpfr_clear(learningRate);
-
 		clearDatasetLabel(datasetTest,labelTest);
-
 		clearDatasetLabel(dataset, label);
-
 		testPerceptron.close();
 		testAveragePerceptron.close();
 		trainingPerceptron.close();

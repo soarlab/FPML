@@ -25,6 +25,7 @@
 #include <utility> 
 #include <sys/stat.h>
 
+//When parameters are not fixed by the analysis (using execute.py), it means the flexfloat.cpp is used for hyperparameter detection.
 #ifndef datasetMantissa
 	#define datasetMantissa 100
 #endif
@@ -43,14 +44,18 @@
 #ifndef testExponent
 	#define testExponent 10
 #endif
-
 #ifndef analysis
+	//It means that the FP analysis is not performed, instead the flexfloat.cpp is used to detect the best configuration of hyperparameters.
 	#define analysis false
 #endif
 
 using namespace std;
 
+/***
+ *It prints the matrix after converting each element to double representation.
+ * */ 
 void printMatrix(vector<vector<flexfloat<datasetExponent,datasetMantissa>>> &matrix){
+	cout<<"Matrix Dim"<<endl;
 	cout<<matrix.size()<<endl;
 	cout<<matrix[0].size()<<endl;
 	for (int j=0;j<matrix.size();j++){
@@ -61,12 +66,18 @@ void printMatrix(vector<vector<flexfloat<datasetExponent,datasetMantissa>>> &mat
 	}
 }
 
+/***
+ * It prints the array after casting each element to double precision;
+ * */
 void printArray(vector<flexfloat<datasetExponent,datasetMantissa>> &vect){
 	for (int i=0;i<vect.size();i++)
 		cout<<flexfloat_as_double<<vect[i]<<" ";
 	cout<<endl;
 }
 
+/***
+ * Converter of the dataset: it receives in input the file as it is (in form of lines). It returns the matrix where each element has <datasetExponent,datasetMantissa> precision;
+ * */
 vector<vector<flexfloat<datasetExponent,datasetMantissa>>> readData(vector<string> &data){
 	vector<vector<flexfloat<datasetExponent,datasetMantissa>>> dataset={};
 	for(int i=0;i<data.size();i++){
@@ -81,6 +92,22 @@ vector<vector<flexfloat<datasetExponent,datasetMantissa>>> readData(vector<strin
 	return dataset;
 }
 
+/***
+ * Converter of the label: it receives in input the file as it is (in form of lines). It returns the label matrix where each element has <datasetExponent,datasetMantissa> precision;
+ * */
+vector<flexfloat<datasetExponent,datasetMantissa>> readLabel(vector<string> &data){
+	vector<flexfloat<datasetExponent,datasetMantissa>> label={};
+	for(int i=0;i<data.size();i++){
+		vector<string> strs={};
+		boost::split(strs,data[i],boost::is_any_of("\t "));
+		label.push_back(stod(strs.back().c_str()));
+	}
+	return label;
+}
+
+/***
+ * Parse the dataset from file.
+ * */
 vector<string> parseDataset(string nameFile){
 	ifstream file(nameFile);
 	string line;
@@ -94,19 +121,12 @@ vector<string> parseDataset(string nameFile){
 	return data;
 }
 
-vector<flexfloat<datasetExponent,datasetMantissa>> readLabel(vector<string> &data){
-	vector<flexfloat<datasetExponent,datasetMantissa>> label={};
-	for(int i=0;i<data.size();i++){
-		vector<string> strs={};
-		boost::split(strs,data[i],boost::is_any_of("\t "));
-		label.push_back(stod(strs.back().c_str()));
-	}
-	return label;
-}
-
+/***
+ * Shuffle data
+ * */
 void shuffleData(vector<vector<flexfloat<datasetExponent,datasetMantissa>>> &matrix, vector<flexfloat<datasetExponent,datasetMantissa>> &label){
 	srand (time(NULL));
-	for (int i=0;i<label.size()/2.0;i++){
+	for (int i=0;i<label.size()/2;i++){
 		int v1 = rand() % label.size();
 		int v2 = rand() % label.size();
 		swap(matrix[v1],matrix[v2]);
@@ -114,6 +134,10 @@ void shuffleData(vector<vector<flexfloat<datasetExponent,datasetMantissa>>> &mat
 	}
 }
 
+/***
+ * Testing procedure of Perceptron, AVP and SVM. Before performing dot product each element of the 
+ * dataset is casted to the precision used for testing. The same for weight vector and label.
+ * */
 double testDataset(vector<vector<flexfloat<datasetExponent, datasetMantissa>>> &matrix,vector<flexfloat<datasetExponent, datasetMantissa>> &label,vector<flexfloat<computationExponent, computationMantissa>> &weights){
 	int mistakes=0;
 	for(int i=0;i<matrix.size();i++){
@@ -121,7 +145,7 @@ double testDataset(vector<vector<flexfloat<datasetExponent, datasetMantissa>>> &
 		for (int index=0;index<matrix[i].size();index++){
 			dotProduct=dotProduct+((flexfloat<testExponent,testMantissa>)matrix[i][index])*((flexfloat<testExponent,testMantissa>)weights[index]);
 		}
-		dotProduct=(dotProduct)*(flexfloat<testExponent,testMantissa>)label[i];
+		dotProduct=(dotProduct)*((flexfloat<testExponent,testMantissa>)label[i]);
 		if (dotProduct<=0){
 			mistakes++;
 		}
@@ -132,10 +156,14 @@ double testDataset(vector<vector<flexfloat<datasetExponent, datasetMantissa>>> &
 	return (1-((double)mistakes/label.size()))*100;
 }
 
+/***
+ * SVM training. Before the dot product is performed, each element of the matrix is mapped to the precision for computation.
+ * Every computation performed in training is bounded by <computationExponent, computationMantissa>.
+ * */
 void SVM(vector<vector<flexfloat<datasetExponent, datasetMantissa>>> &matrix,vector<flexfloat<datasetExponent, datasetMantissa>> &label, vector<flexfloat<computationExponent, computationMantissa>> &weights, flexfloat<computationExponent, computationMantissa> &C, flexfloat<computationExponent, computationMantissa> &learningRate){
 	flexfloat<computationExponent, computationMantissa> updateLearningRate={0};
 	for (int n=0;n<matrix.size();n++){
-		updateLearningRate=learningRate/(1.0+(learningRate*(n/C)));
+		updateLearningRate=learningRate/(1.0+(learningRate*(((flexfloat<computationExponent, computationMantissa>)n)/C)));
 		flexfloat<computationExponent, computationMantissa> dotProduct=0;
 		for (int index=0;index<matrix[n].size();index++){
 			dotProduct=dotProduct+(((flexfloat<computationExponent, computationMantissa>)matrix[n][index])*weights[index]);
@@ -153,7 +181,10 @@ void SVM(vector<vector<flexfloat<datasetExponent, datasetMantissa>>> &matrix,vec
 		}
 	}
 }
-
+/***
+ * Perceptron training. Before the dot product is performed, each element of the matrix is mapped to the precision for computation.
+ * Every computation performed in training is bounded by <computationExponent, computationMantissa>.
+ * */
 void Perceptron(vector<vector<flexfloat<datasetExponent, datasetMantissa>>> &matrix,vector<flexfloat<datasetExponent, datasetMantissa>> &label, vector<flexfloat<computationExponent, computationMantissa>> &weights, flexfloat<computationExponent, computationMantissa> &learningRate){
 	int mistakes=0;
 	for (int n=0;n<matrix.size();n++){
@@ -169,9 +200,11 @@ void Perceptron(vector<vector<flexfloat<datasetExponent, datasetMantissa>>> &mat
 			}
 		}
 	}
-	//cout<<"P:"<<mistakes<<" "<<matrix.size()<<endl;
 }
-
+/***
+ * Average Perceptron training. Before the dot product is performed, each element of the matrix is mapped to the precision for computation.
+ * Every computation performed in training is bounded by <computationExponent, computationMantissa>.
+ * */
 void AveragePerceptron(vector<vector<flexfloat<datasetExponent, datasetMantissa>>> &matrix,vector<flexfloat<computationExponent, computationMantissa>> &averageWeights,double &c,vector<flexfloat<datasetExponent, datasetMantissa>> &label, vector<flexfloat<computationExponent, computationMantissa>> &weights, flexfloat<computationExponent, computationMantissa> &learningRate){
 	int mistakes=0;
 	for (int n=0;n<matrix.size();n++){
@@ -189,9 +222,11 @@ void AveragePerceptron(vector<vector<flexfloat<datasetExponent, datasetMantissa>
 		}
 		c=c+1;
 	}
-	//cout<<"AP:"<<mistakes<<" "<<matrix.size()<<endl;
 }
 
+/***
+ * Utility used to detect the best hyperparameters configuration
+ * */
 void mapBestConfiguration(stringstream &myStream, map<string,vector<double>> &myMap, double accuracyTraining){
 	string hashString;
 	if (!analysis){
@@ -204,6 +239,9 @@ void mapBestConfiguration(stringstream &myStream, map<string,vector<double>> &my
 		}
 	}
 }
+/***
+ * Utility used to print out the best hyperparameters configuration
+ * */
 void printBestConfiguration(ofstream &confFile,string label, map<string,vector<double>> &myMap){
 	double max=0;
 	string best="";
@@ -225,10 +263,9 @@ void printBestConfiguration(ofstream &confFile,string label, map<string,vector<d
 	confFile<<label<<","<<best<<"\n";
 }
 
-
 int main(int argc, char* argv[]){
 	if (argc<2){
-		cout<<"Input the path of the folder. File names must be part1,part2,part3,part4"<<endl;
+		cout<<"Input the path of the folder. The dataset has to be diveded in 4 parts with names: part1.txt, part2.txt, part3.txt, part4.txt"<<endl;
 		return 0;
 	}
 	if ((analysis) && (argc<9)){
@@ -266,22 +303,34 @@ int main(int argc, char* argv[]){
 	vector<flexfloat<computationExponent, computationMantissa>> learningRatesSVM;
 	vector<flexfloat<computationExponent, computationMantissa>> CRegularizersSVM;
 	vector<int> epochsVectSVM;
-
+	
+	ofstream outConfFile;
+	
+	//When the analysis is not performed the program looks for the best hyperparametrs configuration.
 	if (!analysis){
+		outConfFile.open(fileName+"conf.txt");
+		
+		learningRatesSVM={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
+		epochsVectSVM={5,10,20};
+		CRegularizersSVM={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};	
+		
 		learningRatesPerceptron={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
 		epochsVectPerceptron={5,10,20};
 		
 		learningRatesAverage={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
 		epochsVectAverage={5,10,20};
 		
-		learningRatesSVM={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
-		epochsVectSVM={5,10,20};
-		CRegularizersSVM={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};	
 	}
-	
-	ofstream outConfFile;
-	if (!analysis){
-		outConfFile.open(fileName+"conf.txt");
+	if (analysis){
+		learningRatesSVM={stod(argv[2])};
+		CRegularizersSVM={stod(argv[3])};
+		epochsVectSVM={stoi(argv[4])};
+		
+		learningRatesPerceptron={stod(argv[5])};
+		epochsVectPerceptron={stoi(argv[6])};
+		
+		learningRatesAverage={stod(argv[7])};
+		epochsVectAverage={stoi(argv[8])};
 	}
 	
 	for (int i=1;i<5;i++){
@@ -306,14 +355,13 @@ int main(int argc, char* argv[]){
 				}
 			}
 			else{
-				//cout<<"Test:"+fileName+"part"+to_string(j)+".txt"<<endl;
 				vector<string> tmp=parseDataset(fileName+"part"+to_string(j)+".txt");
 				for (int val=0;val<tmp.size();val++){
 					testData.push_back(tmp[val]);
 				}
 			}
 		}
-		//cout<<endl;
+		//Parse the dataset
 		vector<vector<flexfloat<datasetExponent, datasetMantissa>>> matrix=readData(trainingData);
 		vector<flexfloat<datasetExponent, datasetMantissa>> label= readLabel(trainingData);
 		vector<vector<flexfloat<datasetExponent, datasetMantissa>>> matrixTest=readData(testData);
@@ -321,11 +369,7 @@ int main(int argc, char* argv[]){
 		shuffleData(matrix,label);
 		shuffleData(matrixTest,labelTest);
 	
-		if (analysis){
-			learningRatesSVM={stod(argv[2])};//{0.0001};
-			CRegularizersSVM={stod(argv[3])};//argv[3];{10};
-			epochsVectSVM={stoi(argv[4])};//argv[4];{10};
-		}
+		//SVM
 		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesSVM){
 			for(flexfloat<computationExponent, computationMantissa> &C:CRegularizersSVM){
 				flexfloat<computationExponent, computationMantissa> updateLearningRate={0};
@@ -339,7 +383,7 @@ int main(int argc, char* argv[]){
 					double accuracyTraining=testDataset(matrix,label,weights);
 					
 					stringstream trainingString;
-					trainingString<<"$("<<to_string(datasetMantissa)<<","<<to_string(datasetExponent)<<")$"<<"("<<to_string(computationMantissa)<<","<<to_string(computationExponent)<<")$"<<"(N.R,N.R)$"<<"LR="<<flexfloat_as_double<<learningRate<<",C="<<flexfloat_as_double<<C<<"$SIZE$SVM:"<<to_string(accuracyTraining)<<"$";
+					trainingString<<"$("<<to_string(datasetMantissa)<<","<<to_string(datasetExponent)<<")$"<<"("<<to_string(computationMantissa)<<","<<to_string(computationExponent)<<")$"<<"("<<to_string(testMantissa)<<","<<to_string(testExponent)<<")$"<<"LR="<<flexfloat_as_double<<learningRate<<",C="<<flexfloat_as_double<<C<<"$SIZE$SVM:"<<to_string(accuracyTraining)<<"$";
 					trainingSVM<<trainingString.str()<<endl;
 					
 					trainingString.str("");
@@ -358,10 +402,7 @@ int main(int argc, char* argv[]){
 			}
 		}
 		
-		if (analysis){
-			learningRatesPerceptron={stod(argv[5])};
-			epochsVectPerceptron={stoi(argv[6])};
-		}
+		//Perceptron
 		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesPerceptron){
 			for(int epochs:epochsVectPerceptron){
 				vector<flexfloat<computationExponent, computationMantissa>> weights(matrix[0].size(),0);
@@ -373,7 +414,7 @@ int main(int argc, char* argv[]){
 				double accuracyTraining=testDataset(matrix,label,weights);
 				
 				stringstream trainingString;
-				trainingString<<"$("<<to_string(datasetMantissa)<<","<<to_string(datasetExponent)<<")$"<<"("<<to_string(computationMantissa)<<","<<to_string(computationExponent)<<")$"<<"(N.R,N.R)$"<<"LR="<<flexfloat_as_double<<learningRate<<"$SIZE$P:"<<to_string(accuracyTraining)<<"$";
+				trainingString<<"$("<<to_string(datasetMantissa)<<","<<to_string(datasetExponent)<<")$"<<"("<<to_string(computationMantissa)<<","<<to_string(computationExponent)<<")$"<<"("<<to_string(testMantissa)<<","<<to_string(testExponent)<<")$"<<"LR="<<flexfloat_as_double<<learningRate<<"$SIZE$P:"<<to_string(accuracyTraining)<<"$";
 				trainingPerceptron<<trainingString.str()<<endl;
 				
 				trainingString.str("");
@@ -391,10 +432,7 @@ int main(int argc, char* argv[]){
 			}
 		}
 		
-		if (analysis){
-			learningRatesAverage={stod(argv[7])};
-			epochsVectAverage={stoi(argv[8])};
-		}
+		//Average Perceptron
 		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesAverage){		
 			for(int epochs:epochsVectAverage){
 				vector<flexfloat<computationExponent, computationMantissa>> weights(matrix[0].size(),0);
@@ -414,7 +452,7 @@ int main(int argc, char* argv[]){
 				double accuracyTraining=testDataset(matrix,label,averageWeights);
 				
 				stringstream trainingString;
-				trainingString<<"$("<<to_string(datasetMantissa)<<","<<to_string(datasetExponent)<<")$"<<"("<<to_string(computationMantissa)<<","<<to_string(computationExponent)<<")$"<<"(N.R,N.R)$"<<"LR="<<flexfloat_as_double<<learningRate<<"$SIZE$AP:"<<to_string(accuracyTraining)<<"$";
+				trainingString<<"$("<<to_string(datasetMantissa)<<","<<to_string(datasetExponent)<<")$"<<"("<<to_string(computationMantissa)<<","<<to_string(computationExponent)<<")$"<<"("<<to_string(testMantissa)<<","<<to_string(testExponent)<<")$"<<"LR="<<flexfloat_as_double<<learningRate<<"$SIZE$AP:"<<to_string(accuracyTraining)<<"$";
 				trainingAverage<<trainingString.str()<<endl;
 				
 				trainingString.str("");

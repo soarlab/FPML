@@ -13,22 +13,21 @@ if (val!=0):
 	print "ERROR COMPILER(0)"
 	sys.exit()
 
-LexponentDataset=[10];
-LexponentComputation=[10];
-LexponentTest=[10];
+LexponentDataset=[7];
+LexponentComputation=[7];
+LexponentTest=[7];
 
-LmantissaDataset=[3,4,5,6,7,8,9,10];
-LmantissaComputation=[3,4,5,6,7,8,9,10];
-LmantissaTest=[3,4,5,6,7,8,9,10];
+LmantissaDataset=[2,3,4,5,6,7,8,9,10,23,52];
+LmantissaComputation=[2,3,4,5,6,7,8,9,10,23,52];
+LmantissaTest=[2,3,4,5,6,7,8,9,10,23,52];
 
 
 for fileName in os.listdir(pathDatasets):
-	print "Dataset:"+str(fileName)
+	print "Dataset: "+str(fileName)
 	if (os.path.isdir(pathDatasets+fileName+"/")):
 		path=pathDatasets+fileName+"/"
 		if os.path.exists(path+"FLEX/"):
 			shutil.rmtree(path+"FLEX/")
-			
 		if os.path.exists(path+"MPFR/"):
 			shutil.rmtree(path+"MPFR/")
 			
@@ -65,10 +64,12 @@ for fileName in os.listdir(pathDatasets):
 					for exponentComputation in LexponentComputation:
 						for mantissaTest in LmantissaTest:
 							for exponentTest in LexponentTest:
-								flexFloat=("g++ -std=c++11 -Danalysis=true -DdatasetMantissa="+str(mantissaDataset)+" -DdatasetExponent="+str(exponentDataset)+" -DcomputationMantissa="+str(mantissaComputation)+
-								" -DcomputationExponent="+str(exponentComputation)+" -DtestMantissa="+str(mantissaTest)+
-								" -DtestExponent="+str(exponentTest)+ " "+flexfloatcpp+" "+str(softfloat)+"build/Linux-386-GCC/softfloat.a -I "+str(softfloat)+"source/include/ -o flexfloat")
-								#print flexFloat
+								flexFloat=("g++ -std=c++11 -Danalysis=true -DdatasetMantissa="+str(mantissaDataset)+" -DdatasetExponent="+str(exponentDataset)+
+																		 " -DcomputationMantissa="+str(mantissaComputation)+" -DcomputationExponent="+str(exponentComputation)+
+																		 " -DtestMantissa="+str(mantissaTest)+ " -DtestExponent="+str(exponentTest)+ 
+																		 " "+flexfloatcpp+" "+str(softfloat)+"build/Linux-386-GCC/softfloat.a -I "+
+																		 str(softfloat)+"source/include/ -o flexfloat")
+								print flexFloat
 								val=os.system(flexFloat);
 								if (val==0):
 									analysis="./flexfloat "+path+" "+ learningRateSVM+" "+CRegularizerSVM+" "+epochSVM+ " " + learningRateP +" "+ epochP+ " "+ learningRateAP+ " " +epochAP
