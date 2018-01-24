@@ -165,9 +165,9 @@ Our analysis spans minimal values of the floating point range, and compare the r
 %% environment and commands, and keywords command.
 \maketitle
 \section{Introduction}
-We use floating point representation because real world characters have to be modeled in the machine.One way real numbers can be discretized in the machine is using floating point representation. Squeezing infinitely real numbers into a finite number of bits requires an approximate representation\cite{WhatEvery}. 
+We use floating point representation because real world characters have to be modeled in the machine. One way real numbers can be discretized in the machine is using floating point representation. Squeezing infinitely real numbers into a finite number of bits requires an approximate representation\cite{WhatEvery}. 
 Developers approach is to be as much conservative as possible about floating point precision: use the maximum precision provided by target platforms\cite{softfloat}. The execution of floating point operations is the major contributor to energy consumption\cite{softfloat}. Approximately 50\% of energy consumption depends on floating point computations\cite{softfloat}.
-The impact of low-cost floating point precision on machine learning predictors is well studied.\\
+The impact of low-cost floating point precision on machine learning predictors is an hot topic.\\
 Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
 They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE754 single floating point representation (32-bit precision). 
 
