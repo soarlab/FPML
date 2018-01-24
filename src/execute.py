@@ -2,12 +2,14 @@ import os
 import sys
 import shutil
 
+###
 pathDatasets="/home/roki/GIT/FPML/src/datasets/";
 mpfrcpp="/home/roki/GIT/FPML/src/MPFR-ML/src/mpfr.cpp"
-mpfr="mpic++ -std=c++11 "+mpfrcpp+" -o mpfr -lmpfr -lgmp"
 softfloat="/home/roki/softFloat/"
 flexfloatcpp="/home/roki/GIT/FPML/src/FlexFloat-ML/SoftFlexML/src/flexfloat.cpp"
+###
 
+mpfr="mpic++ -std=c++11 "+mpfrcpp+" -o mpfr -lmpfr -lgmp"
 val=os.system(mpfr);
 if (val!=0):
 	print "ERROR COMPILER(0)"
