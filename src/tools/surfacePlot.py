@@ -25,8 +25,8 @@ def getAccuracy(val):
 	
 data=[]
 
-fileNames=["/home/roki/GIT/FPML/src/final/fourclass/MPFR/part3SVMTest.txt",
-		   "/home/roki/GIT/FPML/src/final/fourclass/FLEX/part3SVMTest.txt"]
+fileNames=["/home/roki/GIT/src/final/ionosphere/MPFR/part2APTest.txt",
+		   "/home/roki/GIT/src/final/ionosphere/FLEX/part2APTest.txt"]
 maxi=0
 mini=1.0
 for fileName in fileNames:
@@ -63,20 +63,20 @@ for fileName in fileNames:
 		if getAccuracy(columns[6])!=0:
 			matrix[labelsReading.index(columns[1])][labelsComputation.index(columns[2])][labelsTest.index(columns[3])]=getAccuracy(columns[6])
 
-	labelHiddenX=range(0,len(labelsComputation),1)
-	labelHiddenY=range(0,len(labelsReading),1)
+	labelHiddenX=range(0,len(labelsComputation),5)
+	labelHiddenY=range(0,len(labelsReading),5)
 	labelHiddenZ=range(0,len(labelsTest),1)
 	
-	for i,val in enumerate(labelsReading): 
-		if i not in labelHiddenY:
+	for i,val in enumerate(labelsReading):
+		if i not in labelHiddenY and i!=len(labelsReading)-1:
 			labelsReading[i]=""
 	
 	for i,val in enumerate(labelsComputation): 
-		if i not in labelHiddenX:
+		if i not in labelHiddenX and i!=len(labelsComputation)-1:
 			labelsComputation[i]=""
 	
 	for i,val in enumerate(labelsTest): 
-		if i not in labelHiddenZ:
+		if i not in labelHiddenZ and i!=len(labelHiddenZ)-1:
 			labelsTest[i]=""
 	
 	indexX=range(0,len(labelsReading),1)
@@ -89,17 +89,23 @@ for fileName in fileNames:
 	
 	norm = matplotlib.colors.Normalize(vmin = mini, vmax = maxi, clip = False)
 	
-	plt.subplots_adjust(top = 0.98, bottom = 0.02, right = 0.92, left = 0, hspace = 0.5, wspace = 0.1)
+	plt.subplots_adjust(top = 0.98, bottom = 0.02, right = 0.92, left = 0, hspace = 0.1, wspace = 0.1)
+	
+	print labelsReading
 	
 	for i in range(0,len(labelsTest)):
 		Z=matrix[indexX][indexY][i]
-		Z[Z<0.5]=np.NaN
+		#Z[Z<0.5]=np.NaN
 		ax = fig.add_subplot(3,4,i+1, projection='3d')
-		ax.view_init(30,-20)
+		ax.view_init(90,0)
 		ax.set_zlim(mini, maxi)
-		ax.set_xticklabels(labelsReading)
-		ax.set_yticklabels(labelsComputation)
-		ax.set_title("Test Precision:"+str(labelsTest[i]))
+		ax.set_xticks(indexX)
+		ax.set_xticklabels(labelsReading,fontsize=14)
+		ax.set_yticks(indexY)
+		ax.set_yticklabels(labelsComputation,fontsize=14)
+		ax.set_zticklabels([],fontsize=14)
+		ax.set_title("Test Precision:"+str(labelsTest[i]),fontsize=14)
+		ax.tick_params(axis='both', which='major', pad=12)
 		im=ax.plot_surface(X, Y, Z, cmap="cool", antialiased=True,norm=norm,alpha=1)
 	
 	cbar_ax = fig.add_axes([0.95, 0.05, 0.01, 0.9])

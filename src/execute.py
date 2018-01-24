@@ -3,10 +3,10 @@ import sys
 import shutil
 
 ###
-pathDatasets="/home/roki/GIT/FPML/src/datasets/";
-mpfrcpp="/home/roki/GIT/FPML/src/MPFR-ML/src/mpfr.cpp"
+pathDatasets="/home/roki/GIT/src/datasets/";
+mpfrcpp="/home/roki/GIT/src/MPFR-ML/src/mpfr.cpp"
 softfloat="/home/roki/softFloat/"
-flexfloatcpp="/home/roki/GIT/FPML/src/FlexFloat-ML/SoftFlexML/src/flexfloat.cpp"
+flexfloatcpp="/home/roki/GIT/src/FlexFloat-ML/flexfloat.cpp"
 ###
 
 mpfr="mpic++ -std=c++11 "+mpfrcpp+" -o mpfr -lmpfr -lgmp"
@@ -15,9 +15,9 @@ if (val!=0):
 	print "ERROR COMPILER(0)"
 	sys.exit()
 
-LexponentDataset=[7];
-LexponentComputation=[7];
-LexponentTest=[7];
+LexponentDataset=[10];
+LexponentComputation=[10];
+LexponentTest=[10];
 
 LmantissaDataset=[2,3,4,5,6,7,8,9,10,23,52];
 LmantissaComputation=[2,3,4,5,6,7,8,9,10,23,52];
