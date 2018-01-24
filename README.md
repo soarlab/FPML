@@ -24,9 +24,10 @@ In particular:
 * ```flexfloatcpp=(path to the project file /src/FlexFloat-ML/flexfloat.cpp")```
 
 ## Running the tests
+
 ### Datasets
 The path ```pathDatasets``` has to contain a folder for each dataset we want to analyse.
-In particular the dataset has to be splitted in four parts with names: ```part1.txt; part2.txt; part3.txt; part4.txt```.
+In particular the dataset has to be splitted in four parts with names: ```part1.txt; part2.txt; part3.txt; part4.txt```
 
 The directory tree has to look like the following:
 ```
@@ -35,13 +36,15 @@ pathDatasets/myDataset/part2.txt
 pathDatasets/myDataset/part3.txt
 pathDatasets/myDataset/part4.txt
 ```
-
 The dataset has to be in the following format:
 ```value value value 1 label```
 Inside the folder tools exists a file ```preprocessor.py``` that performs the following format conversion:
-
-From the well known format (it can contains missing attributes): 
+From the well known format (it can contains missing attributes):
 ``` label 1:value 2:value 3:value ... n:value ```
+``` label 1:value 2:value 3:value ... n:value ```
+``` label 1:value 2:value 3:value ... n:value ```
+``` label 1:value 2:value 3:value ... n:value ```
+
 To the representation in use.
 
 ## Contributing
