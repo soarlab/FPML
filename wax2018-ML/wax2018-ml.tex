@@ -228,11 +228,10 @@ Finally, the last key point of the analysis is the testing procedure. While perf
 \section{Results}
 Our analysis consists in the implementation of Perceptron (average Variant) and SVM using MPFR\cite{MPFR} library. 
 The code is developed using C++ language, and it is publicly available at LINK.
-To confirm the results of the analysis the same implementations are replicated using FlexFloat library \cite{softfloat}. We have analyzed the following dataset: TO DO.
+To confirm the results of the analysis the same implementations are replicated using FlexFloat library \cite{softfloat}. We have analyzed the following dataset: fourclass(link), heart(link), diabet(link), .
 The analysis is performed on a desktop machine with i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
 These graphs are obtained using matplotlib library. 
-The graphs in the picture describes how  
-DESCRIBE GRAPHS. TODO: Provide sample where we discuss how testing can be done using poor precision; Precision dataset may not impact on the final accuracy of the predictor when data are well distributed in the dataset.
+DESCRIBE GRAPHS (i) Testing using poor precision results in high accuracy. (ii) dataset precision may not impact on the accuracy: store values in dataset at low precision and save memory space. (iii) conclude about the heterogeneity of datasets. 
 
 
 %% Acknowledgments
