@@ -25,8 +25,8 @@ def getAccuracy(val):
 	
 data=[]
 
-fileNames=["/home/roki/GIT/src/final/ionosphere/MPFR/part2APTest.txt",
-		   "/home/roki/GIT/src/final/ionosphere/FLEX/part2APTest.txt"]
+fileNames=["/home/roki/GIT/src/final/fourclass/MPFR/part2APTest.txt",
+		   "/home/roki/GIT/src/final/fourclass/FLEX/part2APTest.txt"]
 maxi=0
 mini=1.0
 for fileName in fileNames:
@@ -34,7 +34,7 @@ for fileName in fileNames:
 		data=f.readlines()
 	for line in data:
 		columns=line.split("$")
-		if getAccuracy(columns[6])!=0:
+		if getAccuracy(columns[6])>0:
 			maxi=max(maxi,getAccuracy(columns[6]))
 			mini=min(mini,getAccuracy(columns[6]))
 
@@ -90,11 +90,13 @@ for fileName in fileNames:
 	norm = matplotlib.colors.Normalize(vmin = mini, vmax = maxi, clip = False)
 	
 	plt.subplots_adjust(top = 0.98, bottom = 0.02, right = 0.92, left = 0, hspace = 0.1, wspace = 0.1)
-	
-	print labelsReading
-	
+		
+	Z=numpy.zeros((len(labelsReading),len(labelsComputation)))
+
 	for i in range(0,len(labelsTest)):
-		Z=matrix[indexX][indexY][i]
+		for k in indexX:
+			for l in indexY:
+				Z[k][l]=matrix[k][l][i]
 		#Z[Z<0.5]=np.NaN
 		ax = fig.add_subplot(3,4,i+1, projection='3d')
 		ax.view_init(90,0)
@@ -103,7 +105,7 @@ for fileName in fileNames:
 		ax.set_xticklabels(labelsReading,fontsize=14)
 		ax.set_yticks(indexY)
 		ax.set_yticklabels(labelsComputation,fontsize=14)
-		ax.set_zticklabels([],fontsize=14)
+		#ax.set_zticklabels([],fontsize=14)
 		ax.set_title("Test Precision:"+str(labelsTest[i]),fontsize=14)
 		ax.tick_params(axis='both', which='major', pad=12)
 		im=ax.plot_surface(X, Y, Z, cmap="cool", antialiased=True,norm=norm,alpha=1)
