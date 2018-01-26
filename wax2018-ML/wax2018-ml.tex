@@ -62,6 +62,7 @@
 \usepackage{lmodern}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{subcaption}
 \graphicspath{ {images/} }
 
 \begin{document}
@@ -97,7 +98,7 @@
 \affiliation{
   %\position{Position1}
   %\department{Department1}              %% \department is recommended
-  \institution{School of Computing - University of Utah}            %% \institution is required
+  \institution{School of Computing, University of Utah}            %% \institution is required
   %\streetaddress{Street1 Address1}
   %\city{City1}
   %\state{State1}
@@ -114,7 +115,7 @@
 \affiliation{
   %\position{Position2a}
   %\department{Department2a}             %% \department is recommended
-  \institution{School of Computing - University of Utah}           
+  \institution{School of Computing, University of Utah}           
   %% \institution is required
   %\streetaddress{Street2a Address2a}
   %\city{City2a}
@@ -129,10 +130,10 @@
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
-Perceptron and SVM algorithms are two well known linear predictors. Their goal is to build the best hypothesis function given the training data to predict unknown samples in the future. 
-Usually, both training and testing procedures are implemented using IEEE 754 double precision, which results in a conservative approach act to minimize the final error of the implementation. 
-The main goal of this work is to analyze the impact of floating point precision tuning applied to well known predictors. In particular, we want to determine whether reading the dataset or computing training and testing of the predictor is the most important to the accuracy of the algorithm.
-Our analysis spans minimal values of the floating point range, and compare the resulting accuracy to well known IEEE defined standards single and double precision.
+Perceptron and Support Vector Machine (SVM) algorithms are two well-known linear predictors. Their goal is to build the best hypothesis function given the training data to predict unknown samples in the future. 
+Usually, both training and testing procedures are implemented using IEEE 754 double precision, which results in a conservative approach to minimize the final error of the implementation. 
+The main goal of this work is to analyze the impact of floating-point precision tuning applied to these predictors. In particular, we want to determine whether reading the dataset or computing training and testing of the predictor is the most important to the accuracy of the algorithm.
+Our analysis focuses on very small bit-widths values of the floating-point range, and compare the resulting accuracy to well known IEEE 754 defined standards single and double precision.
 \end{abstract}
 
 
@@ -158,72 +159,85 @@ Our analysis spans minimal values of the floating point range, and compare the r
 %% End of generated code
 %% Keywords
 %% comma separated list
-%\keywords{SVM, Perceptron, floating point, consumption.}  %% \keywords are mandatory in final camera-ready submission
+%\keywords{SVM, Perceptron, floating-point, consumption.}  %% \keywords are mandatory in final camera-ready submission
 %% \maketitle
 %% Note: \maketitle command must come after title commands, author
 %% commands, abstract environment, Computing Classification System
 %% environment and commands, and keywords command.
 \maketitle
 \section{Introduction}
-We use floating point representation because real world characters have to be modeled in the machine. Squeezing infinitely real numbers into a finite number of bits requires an approximate representation\cite{WhatEvery}. 
-Developers approach is to be as much conservative as possible about floating point precision: use the maximum precision provided by target platforms\cite{softfloat}. The execution of floating point operations is the major contributor to energy consumption\cite{softfloat}. Approximately 50\% of energy consumption depends on floating point computations\cite{softfloat}.
-The impact of low-cost floating point precision on machine learning predictors is an hot topic.\\
-Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
-They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE754 single floating point representation (32-bit precision). 
+We use floating-point representation because real world numbers have to be modeled in the machine. Squeezing real numbers into a finite number of bits requires an approximate representation\cite{WhatEvery}. 
+Developers approach is to be as much conservative as possible about floating-point precision: use the maximum precision provided by target platforms\cite{softfloat}. The execution of floating-point operations is the major contributor to energy consumption. Approximately 50\% of energy consumption depends on floating-point computations.
+The impact of low-cost floating-point precision on machine learning predictors is an active research area.
+For example, in recent papers \cite{gupta}\cite{dorefa}\cite{Hubara} the authors explore the effects of both floating-point and fixed precision reduction on neural networks. Typically they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to \emph{single} or \emph{double} precision.
+%Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
+%They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE 754 single floating-point representation (32-bit precision). 
+%Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
+%Hubara et al.\cite{Hubara} introduce a method to train Quantized-Neural-Networks (QNNs) using low precision arithmetic.
+%They showed how using 4 bits for weights and activation step result in a degradation of 5.5\% compared to 32-bit single precision.
 
-Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
+At the same time, we are aware of many analyzers that are able to scan a black box algorithm to minimize the precision of each floating-point instruction while still maintaining the desired value of accuracy \cite{reducelam}\cite{mixpreclam}\cite{precimonious}\cite{blame}. 
 
-Hubara et al.\cite{Hubara} introduce a method to train Quantized-Neural-Networks (QNNs) using low precision arithmetic.
-They showed how using 4 bits for weights and activation step result in a degradation of 5.5\% compared to 32-bit single precision.
-
-At the same time, we are aware of many analyzers that are able to scan a black box algorithm to minimize the precision of each floating point instruction while still maintaining the desired value of accuracy. \cite{reducelam}\cite{mixpreclam}\cite{precimonious}\cite{blame}. 
-
-%Program analysis applied to floating point instructions usually maintains few 'ghosts' executions of the program, to replicate the behavior of it with different floating point precisions.\cite{blame}\cite{precimonious}. Once a particular configuration satisfy the evaluation procedure provided by the user, the binary code is altered instructions is injected into the binary code of the program and the candidate result may be evaluated again.\cite{mixpreclam}\cite{reducelam}.
+%Program analysis applied to floating-point instructions usually maintains few 'ghosts' executions of the program, to replicate the behavior of it with different floating-point precisions.\cite{blame}\cite{precimonious}. Once a particular configuration satisfy the evaluation procedure provided by the user, the binary code is altered instructions is injected into the binary code of the program and the candidate result may be evaluated again.\cite{mixpreclam}\cite{reducelam}.
 
 %In particular, the aim of these tools is to produce the minimal configuration of FP instructions such that the output keeps same quality. 
 %These techniques involve both static and dynamic approaches: usually the first is used to detect FP instructions in the program, while the second one produces improvement on the configuration of the solution, also due to 'ghost' executions that verify the current configuration.
 
-Our work admire and look forward these analyzers, but we move away from the detection of the minimal floating point configuration of Perceptron and SVM. 
+Our work admire and look forward these analyzers, but we move away from the detection of the minimal floating-point configuration of Perceptron and SVM. 
 
-We study what affect the accuracy of these predictors in case of poor floating point precision computations. Our goal is to empirically show how limited can be the floating point format while still maintaining hight accuracy. Also, we report which step in the lifetime of these predictors is most sensitive to precision tuning. 
+We study what affect the accuracy of these predictors in case of poor floating-point precision computations. Our goal is to empirically show how limited can be the floating-point format while still maintaining high accuracy. Also, we report which step in the lifetime of these predictors is most sensitive to precision tuning. 
 
-%We want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. %
-
-Our work focuses on tuning the precision of mantissa because we are confident to say that mantissa may show gradual improvement on the final accuracy on the predictor.
-On the other hand, the exponent does not exhibit such behavior. 
+%We want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating-point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. % 
 \begin{figure*}
-	\centering
-	\includegraphics[width=0.32\textwidth]{210}
-	\includegraphics[width=0.32\textwidth]{2310}
-	\includegraphics[width=0.32\textwidth]{5210}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{210}
+		\caption{1a}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{2310}
+		\caption{1a}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{5210}
+		\caption{1a}{\tiny }
+	\end{subfigure}
+	\caption{General caption}
 \end{figure*}
 \section{Background}
-The format adopted in floating point representation is the following: the sign of the number, significand (mantissa) and exponent. 
-This format is part of the IEEE 754 standard which includes two well known representations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent). 
-It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
-
-The Perceptron algorithm is a supervised learning algorithm invented by Frank Rosenblatt in 1957\cite{perceptron}. The goal of the predictor is to train a linear decision boundary on a set of labeled samples to classify unknown data in the future.
+The format adopted in floating-point representation is the following: the sign of the number, significand (mantissa), and exponent. 
+This format is part of the IEEE 754 standard\cite{IEEE} which includes, among others, two well known representations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
+However, it has been shown that using format other than the "defaults" can be beneficial in many applications\cite{softfloat}.
+%It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
+The Perceptron algorithm is a supervised learning algorithm invented by Frank Rosenblatt\cite{perceptron}. The goal of the predictor is to train a linear decision boundary on a set of labeled samples to classify unknown data in the future.
 The Perceptron is a mistake driven algorithm: once a sample is misclassified the predictor is updated but not necessary classified correctly. The update step involves the weight vector, the main actor in the classification process.
-Particularly interesting in terms of floating point analysis is the average variant of vanilla Perceptron. 
-%The average Perceptron differs from the vanilla version because it maintains an average predictor weighted on the misclassification occurred until the current iteration.%
+Particularly interesting in terms of floating-point analysis is the average variant of vanilla Perceptron. 
+The average Perceptron maintains an average predictor weighted on wrong predictions and it needs a wider dynamic range to compute the mean.
 
-On the other hand SVM algorithm produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. SVM is much restrictive that Perceptron because it aims for a safe margin between the linear separator and the closest points. We have implemented the soft version of SVM: (i) soft SVM means that points are allowed to exists between the linear separator and the margin. The goal is to maximize the 'safe' margin while minimizing the number of samples violating it.
+SVM algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. SVM is much restrictive that Perceptron because it aims for a safe margin between the linear separator and the closest points. We have implemented the soft version of SVM, it means that points are allowed to exists between the linear separator and the margin. The goal is to maximize the 'safe' margin while minimizing the number of samples violating it.
 
 \section{Methodology}
-\subsection{Overview}
-Our work consists of re-implementing Perceptron and SVM algorithms using numerical libraries MPFR\cite{MPFR} and \newline FlexFloat\cite{softfloat} such that each floating point instruction can be bounded by a desired floating point format. 
-These libraries allow the developer to express how many bit are assigned to mantissa and exponent for their representation.
+Our work consists of implementing Perceptron and SVM algorithms using numerical libraries MPFR\cite{MPFR} and \newline FlexFloat\cite{softfloat} such that each floating-point instruction can be bounded by a desired floating-point format. 
+These libraries allow the developer to express how many bits are assigned to mantissa and exponent for their representation.
 As a result, our analysis spans lower format configurations allowed for mantissa representation.
-In case of exception (only for lack of dynamic range, a lack of precision for mantissa never produces exception) the procedure is stopped, the exponent is increased and the algorithm starts again. 
-\subsection{Reading, Training and Testing}
-We decide to split the lifetime of the predictor into three different procedures: (i) reading (ii) training (iii) testing. 
+In case of exception (only for lack of dynamic range, a lack of precision for mantissa never produces exception) the procedure is stopped, the exponent is increased, and the algorithm starts again.
+
+Our work focuses on tuning the precision of mantissa because we are confident to say that mantissa may show gradual improvement on the final accuracy on the predictor.
+On the other hand, the exponent does not exhibit such behavior.
+
+We decide to split the lifetime of the predictor into three different procedures: (i) reading, (ii) training, (iii) testing. 
 The goal of such separation is to detect what are the dependencies between them. We want to stress the combinations of formats used for representations.
  
-The first impact of our work is to detect a minimum threshold in the precision to adopt for the dataset representation. Minimizing this precision, while still maintaining high values for the accuracy of predictors ($\frac{Correct.Classification}{Tot.classification}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and memory savage\cite{softfloat}. 
-We call this parameter: Precision Dataset.
-Once the dataset is masked at the desired FP precision, the training procedure of each algorithm imports it independently. The precision used to compute the training is bounded by precision computing. The interface between reading and computing receives in input the dataset from the parsing procedure and adapt it to the bound fixed by precision computing. 
+The first impact of our work is to detect a minimum threshold in the precision to adopt for the dataset representation. Minimizing this precision, while still maintaining high values for the accuracy of predictors ($\frac{Correct.Classification}{Tot.classification}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and memory savage\cite{softfloat}.
+We call this parameter: \emph{dataset precision}.
+
+Once the dataset is masked at the desired floating-point precision, the training procedure of each algorithm imports it independently. The precision used to compute the training is bounded by \emph{computing precision}.
+
+The interface between reading and computing receives in input the dataset from the parsing procedure and adapt it to the bound fixed by \emph{computing precision}. 
 In the result section, we will see what is the impact of this parameter on a well known binary classification problem.
-Finally, the last key point of the analysis is the testing procedure. While performing test on unknown data, the parsing procedure imports the dataset at the same precision used for training.
+Finally, the last key point of the analysis is the testing procedure bounded by \emph{precision testing}. While performing test on unknown data, the parsing procedure imports the dataset at the \emph{dataset precision}.
 %\newpage
 \section{Results}
 Our analysis consists in the implementation of Perceptron (average Variant) and SVM using MPFR\cite{MPFR} library. 
@@ -232,6 +246,7 @@ To confirm the results of the analysis the same implementations are replicated u
 The analysis is performed on a desktop machine with i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
 These graphs are obtained using matplotlib library. 
 DESCRIBE GRAPHS (i) Testing using poor precision results in high accuracy. (ii) dataset precision may not impact on the accuracy: store values in dataset at low precision and save memory space. (iii) conclude about the heterogeneity of datasets. 
+On train it performs relative better (more purple colors).
 
 
 %% Acknowledgments
