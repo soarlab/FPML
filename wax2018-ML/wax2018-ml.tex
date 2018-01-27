@@ -190,46 +190,48 @@ We study what affect the accuracy of these predictors in case of poor floating-p
 %We want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating-point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. % 
 \begin{figure*}
 	\hspace*{\fill}%
-	\begin{subfigure}[b]{0.27\linewidth}
+	\begin{subfigure}[b]{0.28\linewidth}
 		%\centering
-		\caption{Diabet: 2-bit (T) vs 52-bit (B)}
-		\includegraphics[width=\linewidth]{DiabetMPFRpart3APTes2}
+		\caption{{\tiny{Diabet(AP): 2-bit(top) vs 52-bit(down)}}}
+		\includegraphics[width=\linewidth, height=0.6\linewidth]{DiabetMPFRpart3APTes2}
 	\end{subfigure}
 	\hfill%
-	\begin{subfigure}[b]{0.27\linewidth}
+	\begin{subfigure}[b]{0.28\linewidth}
 		%\centering
-		\caption{Splice: 7-bit (T) vs 52-bit (B)}
-		\includegraphics[width=\linewidth]{SpliceMPFRpart4SVMTest7}
+		\caption{{\tiny{Splice(SVM):7-bit(top) vs 52-bit(down)}}}
+		\includegraphics[width=\linewidth, height=0.6\linewidth]{SpliceMPFRpart4SVMTest7}
 	\end{subfigure}
 	\hfill%
-	\begin{subfigure}[b]{0.27\linewidth}
-		\caption{Heart: 3-bit (T) vs 52-bit (B)}
-		\includegraphics[width=\linewidth]{heartFLEXpart3SVMTest3}
+	\begin{subfigure}[b]{0.28\linewidth}
+		\caption{{\tiny{Heart(SVM):3-bit(top) vs 52-bit(down)}}}
+		\includegraphics[width=\linewidth, height=0.6\linewidth]{heartFLEXpart3SVMTest3}
 	\end{subfigure}
 	\hspace*{\fill}%  
 	%\caption{General caption}
 \end{figure*}
 \begin{figure*}
 	\hspace*{\fill}%
-	\begin{subfigure}[b]{0.3\linewidth}
+	\begin{subfigure}[b]{0.28\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{DiabetMPFRpart3APTes52}
+		\includegraphics[width=\linewidth, height=0.6\linewidth]{DiabetMPFRpart3APTes52}
 		%\caption{Lorem Ipsum is simply dummy text of the printing and} %typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}
 	\end{subfigure}\hfill%
-	\begin{subfigure}[b]{0.3\linewidth}
+	\begin{subfigure}[b]{0.28\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{SpliceMPFRpart4SVMTest52}
+		\includegraphics[width=\linewidth, height=0.6\linewidth]{SpliceMPFRpart4SVMTest52}
 		%\caption{Lorem Ipsum is simply dummy text of the printing and}
 		%typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}
 	\end{subfigure}\hfill%
-	\begin{subfigure}[b]{0.3\linewidth}
+	\begin{subfigure}[b]{0.28\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{heartFLEXpart3SVMTest52}
+		\includegraphics[width=\linewidth, height=0.6\linewidth]{heartFLEXpart3SVMTest52}
 		%\caption{Lorem Ipsum is simply dummy text of the printing} 
 		%and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}{\tiny }
 	\end{subfigure}
 	\hspace*{\fill}%
-	\caption{}
+	\caption{\small{Each slide (\textbf{a,b,c}) regards a different dataset and compares two precisions representation (Top and Bottom). Each graph reports on the \textbf{R} axis the \emph{reading precision} and on \textbf{C} axis the \emph{computing precision}. On the third axis the accuracy is reported. Figure(\textbf{a}) shows how testing with 2-bit produce similar accuracy of 52-bit, but it requires higher \emph{computing precision} (purple region is restricted on top graph).
+	Figure(\textbf{b}) shows that training has to be done at highest precision (purple strip), on the other hand testing with 7-bit reaches same accuracy as 52-bit. 
+	Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. Moreover, reading with 2-bit, training with 6-bit and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.}}
 	%, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.} 
 	%It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.}
 \end{figure*}
@@ -283,7 +285,9 @@ These graphs are obtained using matplotlib library\cite{matplotlib}.
 
 Explain how to interpret the graphs. 
 
-DESCRIBE GRAPHS (i) Testing using poor precision results in high accuracy. (ii) dataset precision may not impact on the accuracy: store values in dataset at low precision and save memory space. (iii) conclude about the heterogeneity of datasets. 
+DESCRIBE GRAPHS A common behavior in all the dataset is that the \emph{dataset precision} does not impact on the accuracy.
+
+(i) Testing using poor precision results in high accuracy. (ii) dataset precision may not impact on the accuracy: store values in dataset at low precision and save memory space. (iii) conclude about the heterogeneity of datasets. 
 On train it performs relative better (more purple colors).
 
 
