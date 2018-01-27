@@ -24,8 +24,8 @@ def getAccuracy(val):
 	return acc
 	
 data=[]
-algoritmh="SVM"
-folder="/home/roki/GIT/src/final/splice/"
+algoritmh="AP"
+folder="/home/roki/GIT/src/final/heart/"
 
 for tt in ["Train","Test"]:
 	for indFile in range(1,5): 
@@ -100,7 +100,7 @@ for tt in ["Train","Test"]:
 		
 			for i in range(0,len(labelsTest)):
 				Z=matrix[i][:][:]
-				Z[Z<0.3]=np.NaN
+				Z[Z<0.5]=np.NaN
 				ax = fig.add_subplot(3,4,i+1, projection='3d')
 				ax.view_init(30,-20)
 				ax.set_zlim(mini, maxi)
@@ -135,6 +135,6 @@ for tt in ["Train","Test"]:
 			manager = plt.get_current_fig_manager()
 			manager.resize(*manager.window.maxsize())
 			draw()
-			fig.savefig(folder+"GRAPHS/"+algoritmh+"/"+title+".pdf") 
+			#fig.savefig(folder+"GRAPHS/"+algoritmh+"/"+title+".pdf") 
 plt.show()
 #raw_input()

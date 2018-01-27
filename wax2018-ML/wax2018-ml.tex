@@ -189,40 +189,49 @@ We study what affect the accuracy of these predictors in case of poor floating-p
 
 %We want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating-point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. % 
 \begin{figure*}
-	\begin{subfigure}[b]{0.32\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{210}
-		%\caption{1a}
+	\hspace*{\fill}%
+	\begin{subfigure}[b]{0.27\linewidth}
+		%\centering
+		\caption{Diabet: 2-bit (T) vs 52-bit (B)}
+		\includegraphics[width=\linewidth]{DiabetMPFRpart3APTes2}
 	\end{subfigure}
-	\begin{subfigure}[b]{0.32\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{2310}
-		%\caption{1a}
+	\hfill%
+	\begin{subfigure}[b]{0.27\linewidth}
+		%\centering
+		\caption{Splice: 7-bit (T) vs 52-bit (B)}
+		\includegraphics[width=\linewidth]{SpliceMPFRpart4SVMTest7}
 	\end{subfigure}
-	\begin{subfigure}[b]{0.32\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{5210}
-		%\caption{1a}{\tiny }
+	\hfill%
+	\begin{subfigure}[b]{0.27\linewidth}
+		\caption{Heart: 3-bit (T) vs 52-bit (B)}
+		\includegraphics[width=\linewidth]{heartFLEXpart3SVMTest3}
 	\end{subfigure}
+	\hspace*{\fill}%  
 	%\caption{General caption}
 \end{figure*}
 \begin{figure*}
-	\begin{subfigure}[b]{0.32\linewidth}
+	\hspace*{\fill}%
+	\begin{subfigure}[b]{0.3\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{210}
-		\caption{1a}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{DiabetMPFRpart3APTes52}
+		%\caption{Lorem Ipsum is simply dummy text of the printing and} %typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}
+	\end{subfigure}\hfill%
+	\begin{subfigure}[b]{0.3\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{2310}
-		\caption{1a}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.32\linewidth}
+		\includegraphics[width=\linewidth]{SpliceMPFRpart4SVMTest52}
+		%\caption{Lorem Ipsum is simply dummy text of the printing and}
+		%typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}
+	\end{subfigure}\hfill%
+	\begin{subfigure}[b]{0.3\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{5210}
-		\caption{1a}{\tiny }
+		\includegraphics[width=\linewidth]{heartFLEXpart3SVMTest52}
+		%\caption{Lorem Ipsum is simply dummy text of the printing} 
+		%and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}{\tiny }
 	\end{subfigure}
-	\caption{Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.}
+	\hspace*{\fill}%
+	\caption{}
+	%, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.} 
+	%It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.}
 \end{figure*}
 \section{Background}
 The format adopted in floating-point representation is the following: the sign of the number, significand (mantissa), and exponent. 
