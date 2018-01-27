@@ -628,7 +628,6 @@ void updateWeightsSVMCorrect(unique_ptr<mpfr_t> &weights,mpfr_t &updateLR){
 	}
 
 	for (int i=0;i<numElementsInRow;i++){
-
 		save1=printExcValue(one);
 		res1=subMPFR(one, one, updateLR);
 		if (res1!=0){
@@ -656,16 +655,28 @@ void updateWeightsSVMCorrect(unique_ptr<mpfr_t> &weights,mpfr_t &updateLR){
 
 int SVM(unique_ptr<mpfr_t> &weights,vector<vector<mpfr_t>> &dataset, vector<mpfr_t> &label, mpfr_t &learningRate, mpfr_t &regularizer){
 	int mistakes=0;
+	int res1=0;
+
 	mpfr_t dotProduct;
 	mpfr_init2 (dotProduct, precComputation);
+	res1=setMPFR(dotProduct, "0", 10);
+	if (res1!=0){
+		throwExcExponent(res1, "(SVM ) init dot product");
+	}
 
 	mpfr_t updateLR;
 	mpfr_init2 (updateLR, precComputation);
+	res1=setMPFR(updateLR, "0", 10);
+	if (res1!=0){
+		throwExcExponent(res1, "(SVM ) init update LR");
+	}
 
 	mpfr_t index;
 	mpfr_init2 (index, precComputation);
-
-	int res1=0;
+	res1=setMPFR(index, "0", 10);
+	if (res1!=0){
+		throwExcExponent(res1, "(SVM) update index");
+	}
 
 	mpfr_t one;
 	mpfr_init2(one,precComputation);
@@ -675,7 +686,6 @@ int SVM(unique_ptr<mpfr_t> &weights,vector<vector<mpfr_t>> &dataset, vector<mpfr
 	}
 
 	for (int i=0;i<dataset.size();i++){
-
 		res1=setMPFR(index, to_string(i), 10);
 		if (res1!=0){
 			throwExcExponent(res1, "(SVM )Exp. Exc. for the index, value: "+to_string(i));
@@ -715,7 +725,7 @@ int SVM(unique_ptr<mpfr_t> &weights,vector<vector<mpfr_t>> &dataset, vector<mpfr
 		}
 
 		if (mpfr_cmp_d (dotProduct, 1.0)<=0){
-			updateWeightsSVMMistakes(weights,dataset[i],label[i],learningRate,regularizer);
+			updateWeightsSVMMistakes(weights,dataset[i],label[i],updateLR,regularizer);
 			mistakes++;
 		}
 		else{
@@ -1032,7 +1042,6 @@ int main(int argc, char* argv[]) {
 		catch(out_of_range& e){
 			printToFile(trainingSVM, 7,settingsDataset,settingsComputation,settingsTest,"LR:"+learningRateSVM,to_string(label.size()),"SVM:"+exc,string(e.what()));
 		}
-
 		accuracy=-1;
 		try{
 			accuracy=testPerceptronAndSVM(backupWeightsSVM, datasetTest, labelTest);

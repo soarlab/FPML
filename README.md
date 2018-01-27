@@ -42,7 +42,7 @@ The dataset has to be in the following format:
 
 Inside the folder tools exists a file ```preprocessor.py``` that performs the following format conversion.
 
-From the well known format (it can contains missing attributes):
+From the LIBSVM format (it can contains missing attributes):
 ```
 label 1:value 2:value 3:value ... n:value
 label 1:value 2:value 3:value ... n:value

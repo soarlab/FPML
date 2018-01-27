@@ -1,16 +1,3 @@
-/*
- * Find types and Operations in source/include/flexfloat.hpp
- *
- * To compile:
- * g++ -std=c++11 example_flexfloat.cpp -I ../source/include/ ../build/Linux-386-GCC/softfloat.a -o example_flexfloat_cpp
- *
- * 
- * -Lpath .... -lmpfr -> look in path for libmpfr.a or libmpfr.so ...
- * 
- * libsoftfloat.a -> -LLinux-386 -lsoftfloat
- * g++ -std=c++11 ../src/example_flexfloat.cpp -L/home/roki/softFloat/build/Linux-386-GCC -lsoftfloat -I/home/roki/softFloat/source/include/ -O0 -o example_flexfloat
- *
- */
 #include "flexfloat.hpp"
 #include <cstdio>
 #include <iostream>
@@ -30,19 +17,19 @@
 	#define datasetMantissa 100
 #endif
 #ifndef datasetExponent
-	#define datasetExponent 10
+	#define datasetExponent 15
 #endif
 #ifndef computationMantissa
 	#define computationMantissa 100
 #endif
 #ifndef computationExponent
-	#define computationExponent 10
+	#define computationExponent 15
 #endif
 #ifndef testMantissa
 	#define testMantissa 100
 #endif
 #ifndef testExponent
-	#define testExponent 10
+	#define testExponent 15
 #endif
 #ifndef analysis
 	//It means that the FP analysis is not performed, instead the flexfloat.cpp is used to detect the best configuration of hyperparameters.
@@ -306,7 +293,7 @@ int main(int argc, char* argv[]){
 	
 	ofstream outConfFile;
 	
-	//When the analysis is not performed the program looks for the best hyperparametrs configuration.
+	//When the analysis is not performed, the program looks for the best hyperparametrs configuration.
 	if (!analysis){
 		outConfFile.open(fileName+"conf.txt");
 		
@@ -319,7 +306,6 @@ int main(int argc, char* argv[]){
 		
 		learningRatesAverage={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
 		epochsVectAverage={5,10,20};
-		
 	}
 	if (analysis){
 		learningRatesSVM={stod(argv[2])};
@@ -368,7 +354,6 @@ int main(int argc, char* argv[]){
 		vector<flexfloat<datasetExponent, datasetMantissa>> labelTest= readLabel(testData);
 		shuffleData(matrix,label);
 		shuffleData(matrixTest,labelTest);
-	
 		//SVM
 		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesSVM){
 			for(flexfloat<computationExponent, computationMantissa> &C:CRegularizersSVM){
@@ -392,7 +377,7 @@ int main(int argc, char* argv[]){
 					mapBestConfiguration(trainingString,myMapTrainingSVM,accuracyTraining);
 					
 					double accuracyTest=testDataset(matrixTest,labelTest,weights);
-					
+										
 					stringstream testString;
 					testString<<"$("<<to_string(datasetMantissa)<<","<<to_string(datasetExponent)<<")$"<<"("<<to_string(computationMantissa)<<","<<to_string(computationExponent)<<")$"<<"("<<to_string(testMantissa)<<","<<to_string(testExponent)<<")$"<<"LR="<<flexfloat_as_double<<learningRate<<",C="<<flexfloat_as_double<<C<<"$SIZE$SVM:"<<to_string(accuracyTest)<<"$";
 					testSVM<<testString.str()<<endl;
@@ -401,7 +386,6 @@ int main(int argc, char* argv[]){
 				}
 			}
 		}
-		
 		//Perceptron
 		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesPerceptron){
 			for(int epochs:epochsVectPerceptron){
@@ -431,7 +415,6 @@ int main(int argc, char* argv[]){
 				mapBestConfiguration(trainingString,myMapTestP,accuracyTest);
 			}
 		}
-		
 		//Average Perceptron
 		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesAverage){		
 			for(int epochs:epochsVectAverage){
@@ -442,8 +425,7 @@ int main(int argc, char* argv[]){
 					AveragePerceptron(matrix,averageWeights,c,label,weights,learningRate);
 					shuffleData(matrix,label);
 				}
-				//cout<<c<<endl;
-				//cout<<flexfloat_as_double<<((flexfloat<computationExponent, computationMantissa>)c)<<endl;
+				
 				c=1.0/c;
 				for (int index=0;index<weights.size();index++){
 					averageWeights[index]=weights[index]-(((flexfloat<computationExponent, computationMantissa>)c)*averageWeights[index]);
@@ -481,15 +463,15 @@ int main(int argc, char* argv[]){
 		}
 	}
 	if (!analysis){
-		//printBestConfiguration("SVM Train",myMapTrainingSVM);
+		//printBestConfiguration(outConfFile,"SVM Train",myMapTrainingSVM);
 		//cout<<"\n\n"<<endl;
 		printBestConfiguration(outConfFile,"SVM",myMapTestSVM);
 		//cout<<"\n\n"<<endl;
-		//printBestConfiguration("Perceptron Train",myMapTrainingP);
+		//printBestConfiguration(outConfFile,"Perceptron Train",myMapTrainingP);
 		//cout<<"\n\n"<<endl;
 		printBestConfiguration(outConfFile,"Perceptron",myMapTestP);
 		//cout<<"\n\n"<<endl;
-		//printBestConfiguration("Average Train",myMapTrainingAP);
+		//printBestConfiguration(outConfFile,"Average Train",myMapTrainingAP);
 		//cout<<"\n\n"<<endl;
 		printBestConfiguration(outConfFile,"Average",myMapTestAP);
 		outConfFile.close();

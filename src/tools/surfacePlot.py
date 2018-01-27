@@ -24,13 +24,13 @@ def getAccuracy(val):
 	return acc
 	
 data=[]
-algoritmh="AP"
-folder="/home/roki/GIT/src/final/splice/FLEX/"
+algoritmh="SVM"
+folder="/home/roki/GIT/src/final/splice/"
 
 for tt in ["Train","Test"]:
 	for indFile in range(1,5): 
-		fileNames=["/home/roki/GIT/src/final/splice/FLEX/part"+str(indFile)+algoritmh+tt+".txt", 
-				   "/home/roki/GIT/src/final/splice/MPFR/part"+str(indFile)+algoritmh+tt+".txt"]
+		fileNames=[folder+"FLEX/part"+str(indFile)+algoritmh+tt+".txt", 
+				   folder+"MPFR/part"+str(indFile)+algoritmh+tt+".txt"]
 		print indFile
 		maxi=0
 		mini=1.0
@@ -92,13 +92,15 @@ for tt in ["Train","Test"]:
 			
 			print maxi
 			
+			fig.set_size_inches(18, 10)
+			
 			norm = matplotlib.colors.Normalize(vmin = mini, vmax = maxi, clip = False)
 			
 			plt.subplots_adjust(top = 0.98, bottom = 0.02, right = 0.92, left = 0, hspace = 0.1, wspace = 0.1)
 		
 			for i in range(0,len(labelsTest)):
 				Z=matrix[i][:][:]
-				#Z[Z<0.5]=np.NaN
+				Z[Z<0.3]=np.NaN
 				ax = fig.add_subplot(3,4,i+1, projection='3d')
 				ax.view_init(30,-20)
 				ax.set_zlim(mini, maxi)
@@ -129,7 +131,10 @@ for tt in ["Train","Test"]:
 			#	title=title+"P"
 		
 			plt.title(title),
-			fig.canvas.set_window_title(title)  
+			fig.canvas.set_window_title(title)
+			manager = plt.get_current_fig_manager()
+			manager.resize(*manager.window.maxsize())
 			draw()
+			fig.savefig(folder+"GRAPHS/"+algoritmh+"/"+title+".pdf") 
 plt.show()
-	
+#raw_input()

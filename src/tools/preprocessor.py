@@ -1,7 +1,7 @@
 import numpy
 import sys
 data=[]
-filenamePath="splice/splice"
+filenamePath="../tmp/local/german/german"
 nAttributes=0
 with open(filenamePath+".txt") as f:
 	data=f.readlines()
@@ -40,7 +40,7 @@ j=0
 
 for i in range(0,len(matrix)):
 	for j in range(0,len(matrix[0])-2):
-		matrix[i,j]=(matrix[i,j]-minimo)/(div)
+		matrix[i,j]=float((matrix[i,j]-minimo)/(div))
 			
 tmp=int(len(matrix)/4)
 

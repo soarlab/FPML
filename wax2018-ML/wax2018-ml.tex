@@ -192,6 +192,24 @@ We study what affect the accuracy of these predictors in case of poor floating-p
 	\begin{subfigure}[b]{0.32\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{210}
+		%\caption{1a}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{2310}
+		%\caption{1a}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{5210}
+		%\caption{1a}{\tiny }
+	\end{subfigure}
+	%\caption{General caption}
+\end{figure*}
+\begin{figure*}
+	\begin{subfigure}[b]{0.32\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{210}
 		\caption{1a}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.32\linewidth}
@@ -204,13 +222,14 @@ We study what affect the accuracy of these predictors in case of poor floating-p
 		\includegraphics[width=\linewidth]{5210}
 		\caption{1a}{\tiny }
 	\end{subfigure}
-	\caption{General caption}
+	\caption{Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.}
 \end{figure*}
 \section{Background}
 The format adopted in floating-point representation is the following: the sign of the number, significand (mantissa), and exponent. 
 This format is part of the IEEE 754 standard\cite{IEEE} which includes, among others, two well known representations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
 However, it has been shown that using format other than the "defaults" can be beneficial in many applications\cite{softfloat}.
 %It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
+
 The Perceptron algorithm is a supervised learning algorithm invented by Frank Rosenblatt\cite{perceptron}. The goal of the predictor is to train a linear decision boundary on a set of labeled samples to classify unknown data in the future.
 The Perceptron is a mistake driven algorithm: once a sample is misclassified the predictor is updated but not necessary classified correctly. The update step involves the weight vector, the main actor in the classification process.
 Particularly interesting in terms of floating-point analysis is the average variant of vanilla Perceptron. 
@@ -219,9 +238,10 @@ The average Perceptron maintains an average predictor weighted on wrong predicti
 SVM algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. SVM is much restrictive that Perceptron because it aims for a safe margin between the linear separator and the closest points. We have implemented the soft version of SVM, it means that points are allowed to exists between the linear separator and the margin. The goal is to maximize the 'safe' margin while minimizing the number of samples violating it.
 
 \section{Methodology}
-Our work consists of implementing Perceptron and SVM algorithms using numerical libraries MPFR\cite{MPFR} and \newline FlexFloat\cite{softfloat} such that each floating-point instruction can be bounded by a desired floating-point format. 
-These libraries allow the developer to express how many bits are assigned to mantissa and exponent for their representation.
-As a result, our analysis spans lower format configurations allowed for mantissa representation.
+Our work consists of implementing Perceptron and SVM algorithms using numerical libraries MPFR\cite{MPFR} and \newline FlexFloat\cite{softfloat}. 
+%such that each floating-point instruction can be bounded by a desired floating-point format. 
+These libraries allow the developer to express how many bits are assigned to mantissa and exponent of each floating-point instruction.
+As a result, our analysis spans lowest format configurations allowed for mantissa representation.
 In case of exception (only for lack of dynamic range, a lack of precision for mantissa never produces exception) the procedure is stopped, the exponent is increased, and the algorithm starts again.
 
 Our work focuses on tuning the precision of mantissa because we are confident to say that mantissa may show gradual improvement on the final accuracy on the predictor.
@@ -230,21 +250,30 @@ On the other hand, the exponent does not exhibit such behavior.
 We decide to split the lifetime of the predictor into three different procedures: (i) reading, (ii) training, (iii) testing. 
 The goal of such separation is to detect what are the dependencies between them. We want to stress the combinations of formats used for representations.
  
-The first impact of our work is to detect a minimum threshold in the precision to adopt for the dataset representation. Minimizing this precision, while still maintaining high values for the accuracy of predictors ($\frac{Correct.Classification}{Tot.classification}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and memory savage\cite{softfloat}.
+The first impact of our work is to detect a minimum threshold in the precision to adopt for the dataset representation. Minimizing this precision, while still maintaining high values for the accuracy of predictors ($\frac{Correct.Classifications}{Tot.Classifications}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and memory savage\cite{softfloat}.
 We call this parameter: \emph{dataset precision}.
 
 Once the dataset is masked at the desired floating-point precision, the training procedure of each algorithm imports it independently. The precision used to compute the training is bounded by \emph{computing precision}.
 
 The interface between reading and computing receives in input the dataset from the parsing procedure and adapt it to the bound fixed by \emph{computing precision}. 
 In the result section, we will see what is the impact of this parameter on a well known binary classification problem.
-Finally, the last key point of the analysis is the testing procedure bounded by \emph{precision testing}. While performing test on unknown data, the parsing procedure imports the dataset at the \emph{dataset precision}.
+Finally, the last key point of the analysis is the testing procedure bounded by \emph{testing precision}. While performing test on unknown data, the parsing procedure imports the dataset at the \emph{dataset precision}.
 %\newpage
 \section{Results}
-Our analysis consists in the implementation of Perceptron (average Variant) and SVM using MPFR\cite{MPFR} library. 
-The code is developed using C++ language, and it is publicly available at LINK.
-To confirm the results of the analysis the same implementations are replicated using FlexFloat library \cite{softfloat}. We have analyzed the following dataset: fourclass(link), heart(link), diabet(link), .
-The analysis is performed on a desktop machine with i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
-These graphs are obtained using matplotlib library. 
+%Our analysis consists in the implementation of Perceptron (average Variant) and SVM using MPFR\cite{MPFR} library. 
+In the analysis each \emph{bound} spans the range [2,3,..,9,10,23,53] for the mantissa format. We compare the results with single(23-bit) and double(52-bit) precisions. 
+
+
+Before checking combinations of \emph{reading}, \emph{computing}, and \emph{testing}, a preliminary analysis detects the best hyperparameters configuration for each algorithm (and dataset).
+
+We have run the analysis on the following dataset: fourclass\cite{fourclass}, heart, diabet, ionosphere, and splice \cite{UCI}. 
+The code is developed using C++ language, and it is publicly available\cite{FPML}.
+To confirm the results the same implementation is replicated using FlexFloat library \cite{softfloat}.
+All tests are performed on a desktop machine running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
+These graphs are obtained using matplotlib library\cite{matplotlib}. 
+
+Explain how to interpret the graphs. 
+
 DESCRIBE GRAPHS (i) Testing using poor precision results in high accuracy. (ii) dataset precision may not impact on the accuracy: store values in dataset at low precision and save memory space. (iii) conclude about the heterogeneity of datasets. 
 On train it performs relative better (more purple colors).
 
