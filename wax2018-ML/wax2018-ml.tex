@@ -166,10 +166,10 @@ Our analysis focuses on very small bit-widths values of the floating-point range
 %% environment and commands, and keywords command.
 \maketitle
 \section{Introduction}
-We use floating-point representation because real world numbers have to be modeled in the machine. Squeezing real numbers into a finite number of bits requires an approximate representation\cite{WhatEvery}. 
+We use floating-point representation because real world numbers have to be modeled in the machine. Squeezing real numbers into a finite sequence of bits requires an approximate representation\cite{WhatEvery}. 
 Developers approach is to be as much conservative as possible about floating-point precision: use the maximum precision provided by target platforms\cite{softfloat}. The execution of floating-point operations is the major contributor to energy consumption. Approximately 50\% of energy consumption depends on floating-point computations.
 The impact of low-cost floating-point precision on machine learning predictors is an active research area.
-For example, in recent papers \cite{gupta}\cite{dorefa}\cite{Hubara} the authors explore the effects of both floating-point and fixed precision reduction on neural networks. Typically they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to \emph{single} or \emph{double} precision.
+For example, in recent papers \cite{gupta}\cite{dorefa}\cite{Hubara} the authors explore the effects of both floating-point and fixed precision reduction on neural networks. Typically they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
 %Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
 %They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE 754 single floating-point representation (32-bit precision). 
 %Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
@@ -190,50 +190,50 @@ We study what affect the accuracy of these predictors in case of poor floating-p
 %We want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating-point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. % 
 \begin{figure*}
 	\hspace*{\fill}%
-	\begin{subfigure}[b]{0.28\linewidth}
+	\begin{subfigure}[b]{0.29\linewidth}
 		%\centering
-		\caption{{\tiny{Diabet(AP): 2-bit(top) vs 52-bit(down)}}}
+		\caption{{\tiny{Diabet(AP): 2-bit(t) vs 52-bit(b)}}}
 		\includegraphics[width=\linewidth, height=0.6\linewidth]{DiabetMPFRpart3APTes2}
 	\end{subfigure}
 	\hfill%
-	\begin{subfigure}[b]{0.28\linewidth}
+	\begin{subfigure}[b]{0.29\linewidth}
 		%\centering
-		\caption{{\tiny{Splice(SVM):7-bit(top) vs 52-bit(down)}}}
+		\caption{{\tiny{Splice(SVM):7-bit(t) vs 52-bit(b)}}}
 		\includegraphics[width=\linewidth, height=0.6\linewidth]{SpliceMPFRpart4SVMTest7}
 	\end{subfigure}
 	\hfill%
-	\begin{subfigure}[b]{0.28\linewidth}
-		\caption{{\tiny{Heart(SVM):3-bit(top) vs 52-bit(down)}}}
+	\begin{subfigure}[b]{0.29\linewidth}
+		\caption{{\tiny{Heart(SVM):3-bit(t) vs 52-bit(b)}}}
 		\includegraphics[width=\linewidth, height=0.6\linewidth]{heartFLEXpart3SVMTest3}
 	\end{subfigure}
 	\hspace*{\fill}%  
 	%\caption{General caption}
 \end{figure*}
+\setcounter{figure}{0}    
 \begin{figure*}
 	\hspace*{\fill}%
-	\begin{subfigure}[b]{0.28\linewidth}
+	\begin{subfigure}[b]{0.29\linewidth}
 		\centering
 		\includegraphics[width=\linewidth, height=0.6\linewidth]{DiabetMPFRpart3APTes52}
 		%\caption{Lorem Ipsum is simply dummy text of the printing and} %typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}
 	\end{subfigure}\hfill%
-	\begin{subfigure}[b]{0.28\linewidth}
+	\begin{subfigure}[b]{0.29\linewidth}
 		\centering
 		\includegraphics[width=\linewidth, height=0.6\linewidth]{SpliceMPFRpart4SVMTest52}
 		%\caption{Lorem Ipsum is simply dummy text of the printing and}
 		%typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}
 	\end{subfigure}\hfill%
-	\begin{subfigure}[b]{0.28\linewidth}
+	\begin{subfigure}[b]{0.29\linewidth}
 		\centering
 		\includegraphics[width=\linewidth, height=0.6\linewidth]{heartFLEXpart3SVMTest52}
 		%\caption{Lorem Ipsum is simply dummy text of the printing} 
 		%and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}{\tiny }
 	\end{subfigure}
 	\hspace*{\fill}%
-	\caption{\small{Each slide (\textbf{a,b,c}) regards a different dataset and compares two precisions representation (Top and Bottom). Each graph reports on the \textbf{R} axis the \emph{reading precision} and on \textbf{C} axis the \emph{computing precision}. On the third axis the accuracy is reported. Figure(\textbf{a}) shows how testing with 2-bit produce similar accuracy of 52-bit, but it requires higher \emph{computing precision} (purple region is restricted on top graph).
-	Figure(\textbf{b}) shows that training has to be done at highest precision (purple strip), on the other hand testing with 7-bit reaches same accuracy as 52-bit. 
+	\caption{\small{In each pair of graphs (\textbf{a,b,c}) a different dataset is considered. Two different \emph{testing precision} are compared (top and bottom). \textbf{AP} stands for average Perceptron while \textbf{SVM} for Support Vector Machine. Each graph reports on the \textbf{R} axis the \emph{reading precision} and on \textbf{C} axis the \emph{computing precision}. The third axis represent the final accuracy of the algorithm. Figure(\textbf{a}) shows how testing with 2-bit produces similar accuracy of 52-bit, but it requires higher \emph{computing precision} (purple region is restricted on top graph).
+	Figure(\textbf{b}) shows that for the Splice dataset training has to be done at highest precisions (purple strip), on the other hand testing with 7-bit reaches same accuracy of 52-bit. 
 	Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. Moreover, reading with 2-bit, training with 6-bit and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.}}
-	%, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.} 
-	%It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.}
+	\label{results}
 \end{figure*}
 \section{Background}
 The format adopted in floating-point representation is the following: the sign of the number, significand (mantissa), and exponent. 
@@ -267,29 +267,20 @@ We call this parameter: \emph{dataset precision}.
 Once the dataset is masked at the desired floating-point precision, the training procedure of each algorithm imports it independently. The precision used to compute the training is bounded by \emph{computing precision}.
 
 The interface between reading and computing receives in input the dataset from the parsing procedure and adapt it to the bound fixed by \emph{computing precision}. 
-In the result section, we will see what is the impact of this parameter on a well known binary classification problem.
+In the result section, we will see what is the impact of this parameter on a set of five datasets.
 Finally, the last key point of the analysis is the testing procedure bounded by \emph{testing precision}. While performing test on unknown data, the parsing procedure imports the dataset at the \emph{dataset precision}.
 %\newpage
 \section{Results}
 %Our analysis consists in the implementation of Perceptron (average Variant) and SVM using MPFR\cite{MPFR} library. 
-In the analysis each \emph{bound} spans the range [2,3,..,9,10,23,53] for the mantissa format. We compare the results with single(23-bit) and double(52-bit) precisions. 
-
-
-Before checking combinations of \emph{reading}, \emph{computing}, and \emph{testing}, a preliminary analysis detects the best hyperparameters configuration for each algorithm (and dataset).
-
-We have run the analysis on the following dataset: fourclass\cite{fourclass}, heart, diabet, ionosphere, and splice \cite{UCI}. 
-The code is developed using C++ language, and it is publicly available\cite{FPML}.
+Each \emph{bound} in the analysis spans the range $[2,3,..,9,\\10,23,52]$ for the mantissa format. 
+Before checking combinations of \emph{reading}, \emph{computing}, and \emph{testing}, a preliminary analysis detects the best hyperparameters configuration for each algorithm (and dataset). We have run the analysis on the following datasets: \emph{fourclass}\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}\cite{UCI}. Each dataset is split in four parts to perform cross validation.
+The code is developed using C++ language, and togheter with graphs and numerical results it is publicly available\cite{FPML}.
 To confirm the results the same implementation is replicated using FlexFloat library \cite{softfloat}.
 All tests are performed on a desktop machine running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
 These graphs are obtained using matplotlib library\cite{matplotlib}. 
 
-Explain how to interpret the graphs. 
-
-DESCRIBE GRAPHS A common behavior in all the dataset is that the \emph{dataset precision} does not impact on the accuracy.
-
-(i) Testing using poor precision results in high accuracy. (ii) dataset precision may not impact on the accuracy: store values in dataset at low precision and save memory space. (iii) conclude about the heterogeneity of datasets. 
-On train it performs relative better (more purple colors).
-
+Fig.{\ref{results}} reports three samples of the output of the analysis.
+A common behavior for the three datasets is that tuning the \emph{dataset precision} does not impact on the final accuracy of the predictor.
 
 %% Acknowledgments
 %\begin{acks}                            %% acks environment is optional
