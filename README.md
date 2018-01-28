@@ -26,18 +26,18 @@ the only file you need to modify is ```src/execute.py```.
 In particular:
 * ```pathDatasets="(insert datasets paths)"``` ex: pathDatasets="/home/user/project/datasets/";
 * ```mpfrcpp="(path to the project file /src/MPFR-ML/src/mpfrcpp.cpp")``` ex. mpfrcpp="../src/mpfr.cpp"
-* ```softfloat="(path to SoftFloat library)"``` ex. "/home/user/softFloat/"
-* ```flexfloatcpp=(path to the project file /src/FlexFloat-ML/flexfloat.cpp")```
+* ```softfloat="(path to SoftFloat library)"``` ex. softfloat="/home/user/softFloat/"
+* ```flexfloatcpp=(path to the project file /src/FlexFloat-ML/flexfloat.cpp")``` ex.flexfloatcpp="../src/FlexFloat-ML/flexfloat.cpp"
 
 The directory ``` src/tools/ ``` contains:
 
-* ``` preprocessor.py ``` it converts the dataset from LIBSVM format to the our standard.
+* ``` preprocessor.py ``` it converts the dataset from LIBSVM format to our standard.
 * ``` surfacePlot.py ``` given in input the results of the analysis it outputs the graphs.
 
 ## Running the tests
 
 ### Datasets
-The path ```pathDatasets``` has to contain a folder for each dataset we want to analyse.
+The path ```pathDatasets``` contains the folder of each dataset we want to analyse.
 In particular the dataset has to be splitted in four parts with names: ```part1.txt; part2.txt; part3.txt; part4.txt```
 
 The directory tree has to look like the following:
@@ -69,6 +69,7 @@ value value value ... bias label
 value value value ... bias label
 value value value ... bias label
 ```
+At the same time the ```preprocessor.py``` splits the dataset in four parts.
 
 ## Contributing
 ## Versioning
