@@ -2,12 +2,12 @@ import os
 import sys
 import shutil
 
-###
+### Modify with correct path ###
 pathDatasets="/home/roki/GIT/src/datasets/";
 mpfrcpp="/home/roki/GIT/src/MPFR-ML/src/mpfr.cpp"
 softfloat="/home/roki/softFloat/"
 flexfloatcpp="/home/roki/GIT/src/FlexFloat-ML/flexfloat.cpp"
-###
+################################
 
 mpfr="mpic++ -std=c++11 "+mpfrcpp+" -o mpfr -lmpfr -lgmp"
 val=os.system(mpfr);
@@ -15,14 +15,19 @@ if (val!=0):
 	print "ERROR COMPILER(0)"
 	sys.exit()
 
+#### Format configuration ###
+
+#### Exponent Configuration
 LexponentDataset=[10];
 LexponentComputation=[10];
 LexponentTest=[10];
+############
 
+#### Mantissa Configuration
 LmantissaDataset=[2,3,4,5,6,7,8,9,10,23,52];
 LmantissaComputation=[2,3,4,5,6,7,8,9,10,23,52];
 LmantissaTest=[2,3,4,5,6,7,8,9,10,23,52];
-
+###########################
 
 for fileName in os.listdir(pathDatasets):
 	print "Dataset: "+str(fileName)
@@ -32,7 +37,8 @@ for fileName in os.listdir(pathDatasets):
 			shutil.rmtree(path+"FLEX/")
 		if os.path.exists(path+"MPFR/"):
 			shutil.rmtree(path+"MPFR/")
-			
+		if os.path.exists(path+"GRAPHS/"):
+			shutil.rmtree(path+"GRAPHS/")	
 		findConf="g++ -std=c++11 "+str(flexfloatcpp) +" "+softfloat+"build/Linux-386-GCC/softfloat.a -I "+softfloat+"source/include/ -o flexfloat" 
 		#print findConf
 		val=os.system(findConf);
@@ -60,6 +66,10 @@ for fileName in os.listdir(pathDatasets):
 		
 		os.makedirs(path+"FLEX/")
 		os.makedirs(path+"MPFR/")
+		os.makedirs(path+"GRAPHS/")
+		os.makedirs(path+"GRAPHS/AP")
+		os.makedirs(path+"GRAPHS/P")
+		os.makedirs(path+"GRAPHS/SVM")
 		for mantissaDataset in LmantissaDataset:
 			for exponentDataset in LexponentDataset:
 				for mantissaComputation in LmantissaComputation:

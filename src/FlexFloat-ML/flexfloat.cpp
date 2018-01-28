@@ -12,7 +12,8 @@
 #include <utility> 
 #include <sys/stat.h>
 
-//When parameters are not fixed by the analysis (using execute.py), it means the flexfloat.cpp is used for hyperparameter detection.
+//When parameters are not injected by the analysis (with the execute.py), it means the flexfloat is used in hyperparameter detection mode.
+//Hyperparameter detection is done with 115-bit format.
 #ifndef datasetMantissa
 	#define datasetMantissa 100
 #endif
@@ -32,7 +33,7 @@
 	#define testExponent 15
 #endif
 #ifndef analysis
-	//It means that the FP analysis is not performed, instead the flexfloat.cpp is used to detect the best configuration of hyperparameters.
+	//It means that the FP analysis is not performed, instead the flexfloat is used to detect the best configuration of hyperparameters.
 	#define analysis false
 #endif
 
@@ -212,7 +213,7 @@ void AveragePerceptron(vector<vector<flexfloat<datasetExponent, datasetMantissa>
 }
 
 /***
- * Utility used to detect the best hyperparameters configuration
+ * Utility used to store the best hyperparameters configuration
  * */
 void mapBestConfiguration(stringstream &myStream, map<string,vector<double>> &myMap, double accuracyTraining){
 	string hashString;
@@ -251,10 +252,22 @@ void printBestConfiguration(ofstream &confFile,string label, map<string,vector<d
 }
 
 int main(int argc, char* argv[]){
+	//The analysis needs at least the path of the dataset (hyperparameterd detection mode)
 	if (argc<2){
 		cout<<"Input the path of the folder. The dataset has to be diveded in 4 parts with names: part1.txt, part2.txt, part3.txt, part4.txt"<<endl;
 		return 0;
 	}
+	/***
+	* In case of FP analysis it need 9 parameters:
+	* argv[1]: Dataset Path. (ex. /home/roki/GIT/src/final/heart/)
+	* argv[2]: learningRate SVM
+	* argv[3]: CRegularizer SVM
+	* argv[4]: epoch SVM
+	* argv[5]: learningRate Perceptron
+	* argv[6]: epoch Perceptron	
+	* argv[7]: learningRate Average	
+	* argv[8]: epoch Average	
+	***/
 	if ((analysis) && (argc<9)){
 		cout<<"Parameters problem"<<endl;
 		return 0;
@@ -307,6 +320,7 @@ int main(int argc, char* argv[]){
 		learningRatesAverage={10.0,1.0,0.1,0.01,0.001,0.0001,0.00001};
 		epochsVectAverage={5,10,20};
 	}
+	//In case of the analysis the configuration is retrieved from parameters
 	if (analysis){
 		learningRatesSVM={stod(argv[2])};
 		CRegularizersSVM={stod(argv[3])};
@@ -464,15 +478,10 @@ int main(int argc, char* argv[]){
 	}
 	if (!analysis){
 		//printBestConfiguration(outConfFile,"SVM Train",myMapTrainingSVM);
-		//cout<<"\n\n"<<endl;
 		printBestConfiguration(outConfFile,"SVM",myMapTestSVM);
-		//cout<<"\n\n"<<endl;
 		//printBestConfiguration(outConfFile,"Perceptron Train",myMapTrainingP);
-		//cout<<"\n\n"<<endl;
 		printBestConfiguration(outConfFile,"Perceptron",myMapTestP);
-		//cout<<"\n\n"<<endl;
 		//printBestConfiguration(outConfFile,"Average Train",myMapTrainingAP);
-		//cout<<"\n\n"<<endl;
 		printBestConfiguration(outConfFile,"Average",myMapTestAP);
 		outConfFile.close();
 	}

@@ -24,8 +24,14 @@ def getAccuracy(val):
 	return acc
 	
 data=[]
+
+### Configuration ###
+#Select from AP, SVM, P
 algoritmh="AP"
 folder="/home/roki/GIT/src/final/heart/"
+#####################
+
+### Note: the script can save the graphs in the folder: /folder/GRAPHS/*. To do it just remove comment from line 124 'fig.savefig'
 
 for tt in ["Train","Test"]:
 	for indFile in range(1,5): 
@@ -90,7 +96,7 @@ for tt in ["Train","Test"]:
 		
 			for i in range(0,len(labelsTest)):
 				Z=matrix[i][:][:]
-				Z[Z<0.5]=np.NaN
+				Z[Z<0.5]=np.NaN #Used to remove accuracy values under 0.5
 				ax = fig.add_subplot(3,4,i+1, projection='3d')
 				ax.view_init(30,-20)
 				ax.set_zlim(mini, maxi)
