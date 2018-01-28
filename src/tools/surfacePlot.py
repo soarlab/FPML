@@ -31,7 +31,6 @@ for tt in ["Train","Test"]:
 	for indFile in range(1,5): 
 		fileNames=[folder+"FLEX/part"+str(indFile)+algoritmh+tt+".txt", 
 				   folder+"MPFR/part"+str(indFile)+algoritmh+tt+".txt"]
-		print indFile
 		maxi=0
 		mini=1.0
 		for fileName in fileNames:
@@ -83,19 +82,10 @@ for tt in ["Train","Test"]:
 			indexX=range(0,len(labelsComputation),1)
 			indexZ=range(0,len(labelsTest),1)
 			
-		
 			X, Y = np.meshgrid(indexX,indexY)
-		
 			fig = plt.figure(num=None, dpi=100, facecolor='w', edgecolor='k')
-			
-			print mini
-			
-			print maxi
-			
 			fig.set_size_inches(18, 10)
-			
 			norm = matplotlib.colors.Normalize(vmin = mini, vmax = maxi, clip = False)
-			
 			plt.subplots_adjust(top = 0.98, bottom = 0.02, right = 0.92, left = 0, hspace = 0.1, wspace = 0.1)
 		
 			for i in range(0,len(labelsTest)):
@@ -108,7 +98,6 @@ for tt in ["Train","Test"]:
 				ax.set_xticklabels(labelsReading)
 				ax.set_yticks(indexX)
 				ax.set_yticklabels(labelsComputation)
-				#ax.set_zticklabels([],fontsize=14)
 				ax.set_title("Test Precision:"+str(labelsTest[i]))
 				ax.set_xlabel("R")
 				ax.xaxis.labelpad = -8
@@ -121,15 +110,6 @@ for tt in ["Train","Test"]:
 			cbar_ax.set_yticklabels(['< -1', '0', '> 1'])
 			fig.colorbar(im,cax=cbar_ax)
 			title=fileName.split("/")[-2]+fileName.split("/")[-1].split(".")[0]
-			
-			#fileName.split("/")[-3]+"\n"+
-			#if "AP" in fileName:
-			#	title=title+"AP"
-			#if "SVM" in fileName:
-			#	title=title+"SVM"
-			#if "P" in fileName:
-			#	title=title+"P"
-		
 			plt.title(title),
 			fig.canvas.set_window_title(title)
 			manager = plt.get_current_fig_manager()
@@ -137,4 +117,3 @@ for tt in ["Train","Test"]:
 			draw()
 			#fig.savefig(folder+"GRAPHS/"+algoritmh+"/"+title+".pdf") 
 plt.show()
-#raw_input()

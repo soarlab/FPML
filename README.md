@@ -6,7 +6,7 @@ The analysis is built upon numerical libraries: [MPFR](http://www.mpfr.org/mpfr-
 
 ## Getting Started
 
-Follow this instruction to get a copy of the project on your local machine.
+Please follow this instruction to get a copy of the project on your local machine.
 
 ### Prerequisites
 * Python: tested with Python 2.7.12;
@@ -16,12 +16,23 @@ Follow this instruction to get a copy of the project on your local machine.
 
 
 ### Installing
-After all libraies have been installed in the machine, the only file you need to modify is ```src/execute.py```.
+After all libraries have been installed in the machine, clone this repository.
+To run the analysis, you need the following:
+* ``` /src/FlexFloat-ML/* ``` Implementation of the analysis with FlexFloat.
+* ``` /src/MPFR-ML/src/* ``` Implementation of the analysis with MPFR.
+* ``` /src/execute.py ``` Run the analysis.
+
+the only file you need to modify is ```src/execute.py```.
 In particular:
 * ```pathDatasets="(insert datasets paths)"``` ex: pathDatasets="/home/user/project/datasets/";
 * ```mpfrcpp="(path to the project file /src/MPFR-ML/src/mpfrcpp.cpp")``` ex. mpfrcpp="../src/mpfr.cpp"
 * ```softfloat="(path to SoftFloat library)"``` ex. "/home/user/softFloat/"
 * ```flexfloatcpp=(path to the project file /src/FlexFloat-ML/flexfloat.cpp")```
+
+The directory ``` src/tools/ ``` contains:
+
+* ``` preprocessor.py ``` it converts the dataset from LIBSVM format to the our standard.
+* ``` surfacePlot.py ``` given in input the results of the analysis it outputs the graphs.
 
 ## Running the tests
 
@@ -45,12 +56,19 @@ Inside the folder tools exists a file ```preprocessor.py``` that performs the fo
 From the LIBSVM format (it can contains missing attributes):
 ```
 label 1:value 2:value 3:value ... n:value
+label 1:value 3:value ... n:value
 label 1:value 2:value 3:value ... n:value
-label 1:value 2:value 3:value ... n:value
-label 1:value 2:value 3:value ... n:value
+label 2:value 3:value ... n:value
 ```
 
-To the representation in use.
+To:
+
+```
+value value value ... bias label
+value value value ... bias label
+value value value ... bias label
+value value value ... bias label
+```
 
 ## Contributing
 ## Versioning
