@@ -236,21 +236,26 @@ We study what affect the accuracy of these predictors in case of poor floating-p
 	Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. Moreover, reading with 2-bit, training with 6-bit and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.}}
 	\label{results}
 \end{figure*}
+
+
 \section{Background}
-The format adopted in floating-point representation is the following: the sign of the number, significand (mantissa), and exponent. 
-This format is part of the IEEE 754 standard\cite{IEEE} which includes, among others, two well known representations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
-However, it has been shown that using format other than the "defaults" can be beneficial in many applications\cite{softfloat}.
+
+The format adopted for floating-point representation consists of the sign of the number, significand (mantissa), and exponent. 
+This format is part of the IEEE 754 standard\cite{IEEE}, which includes, among others, two well-known and popular resentations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
+However, it has been shown that using representations other than these ``default'' ones can be beneficial in many applications to improve runtime and energy efficiency~\cite{softfloat}, which is what we explore in this work.
 %It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
 
 The Perceptron algorithm is a supervised learning algorithm invented by Frank Rosenblatt\cite{perceptron}.
-It is a mistake driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector, the main actor in the classification process. The Perceptron is composed by one neuron with activation function (LTU).
+It is a mistake-driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector, which is the main contributor to the classification process. The Perceptron is composed of one neuron with activation function (LTU).
 Particularly interesting in terms of floating-point analysis is the average variant of vanilla Perceptron. 
-The average Perceptron maintains an average predictor weighted on wrong predictions and it needs a wider dynamic range to compute the mean.
+The average Perceptron maintains an average predictor weighted on wrong predictions, and it needs a wider dynamic range for this computation.
 
-SVM algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. SVM is much restrictive that Perceptron because it aims for a safe margin between the linear separator and the closest points. We have implemented the soft version of SVM, it means that points are allowed to exists between the linear separator and the margin. SVM is trained with stochastic sub-gradient descent method. The goal is to maximize the 'safe' margin while minimizing the number of samples violating it.
+SVM algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
+
 
 \section{Methodology}
-Our work consists of implementing Perceptron and SVM algorithms using numerical libraries MPFR\cite{MPFR} and \newline FlexFloat\cite{softfloat}. 
+
+We implemented Perceptron and SVM algorithms using numerical libraries MPFR~\cite{MPFR} and FlexFloat~\cite{softfloat}. 
 %such that each floating-point instruction can be bounded by a desired floating-point format. 
 These libraries allow the developer to express how many bits are assigned to mantissa and exponent of each floating-point instruction.
 As a result, our analysis spans lowest format configurations allowed for mantissa representation.
