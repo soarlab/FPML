@@ -167,7 +167,7 @@ Our analysis in particular focuses on very small floating-point bit-widths (i.e.
 \maketitle
 \section{Introduction}
 Floating-point representation was invented to model real numbers in computers. Representing real numbers as a finite sequence of bits naturally introduces approximation, which leads to errors in computations~\cite{WhatEvery}. 
-Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform~\cite{softfloat}. However, executing floating-point operations is a major contributor to runtime and energy consumption, and hence leveraging lower precisions can lead to significant savings. In \cite{softfloat} the authors run a set of highly demanding floating-point applications on a micro-controller unit, and they empirically shown that 30\% of the energy consumption of the core was due to floating-points computations and another 20\% to moving operands between memory and registers.
+Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform~\cite{softfloat}. However, executing floating-point operations is a major contributor to runtime and energy consumption, and hence leveraging lower precisions can lead to significant savings. In \cite{softfloat} the authors run a set of highly demanding floating-point applications on a micro-controller unit, and they empirically show that 30\% of the energy consumption of the core was due to floating-points computations and another 20\% to moving operands between memory and registers.
 The impact of low-cost floating-point precisions on machine learning predictors is an active research area.
 For example, several recent papers explore the effects of both floating-point and fixed precision reduction on neural networks\cite{gupta,dorefa,Hubara}. Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
 %Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
@@ -249,7 +249,7 @@ It is a mistake-driven algorithm: once a sample is misclassified the predictor i
 Particularly interesting in terms of floating-point analysis is the average variant of vanilla Perceptron. 
 The average Perceptron maintains an average predictor weighted on wrong predictions, and it needs a wider dynamic range for this computation.
 
-SVM\cite{cortes} algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
+SVM\cite{cortes}\cite{vapnik} algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
 
 
 \section{Methodology}
@@ -280,18 +280,17 @@ Before checking combinations of \emph{reading}, \emph{computing}, and \emph{test
 The code is developed using C++ language, and togheter with graphs and numerical results it is publicly available\cite{FPML}.
 All tests are performed on a desktop machine running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
 All the graphs are obtained using matplotlib library\cite{matplotlib}. 
-
 Fig.{\ref{results}} reports three samples of the output of the analysis.
-Figure(\textbf{a}) shows how testing with 2-bit produces similar accuracy of 52-bit, but it requires an higher \emph{computing precision} (purple region is restricted on top graph).
-Figure(\textbf{b}) shows that in case of \emph{Splice} dataset, SVM has to be trained at the highest precisions (purple strip). On the other hand, testing with only 7-bit results in same accuracy of 52-bit. Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. Moreover, the following configuration: reading with 2-bit, training with 6-bit, and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.
-
 Given that our analysis is extremely sensitive to the input dataset, we are highly confident to state the following:
 \begin{itemize}
-	\item The precision used to memorize the dataset can be substantially reduced with respect to single or double precisions. Detecting a minimal threshold value for the \emph{dataset precision} can dramatically impact on the storage space of the dataset.
+	\item The precision used to memorize the dataset can be substantially reduced with respect to single or double precisions. Detecting a minimal threshold value for the \emph{dataset precision} can dramatically impact on the storage space of the dataset. In all the five datasets we analyzed the \emph{precision dataset} does not impact on the final accuracy of the algorithm, meaning that samples can be stored even using only 3-bit for mantissa representation.
 	
-	\item From the results of the analysis we are confident to say that the \emph{computing precision} is the most critical step in the prediction process of these classifier. On the other hand we do not encourage 52-bit for \emph{computing precision}. It might be that using reduced but equal format of \emph{precisions} can performs even better than "all" double configuration.
+	\item The \emph{computing precision} is the most critical step in the prediction process of these classifier. Figure1-(\textbf{b}) shows that in case of the \emph{Splice} dataset, SVM has to be trained at the highest precisions (purple strip). Out of 10 analysis (5-AP and 5-SVM)\footnote{Perceptron is excluded because it does not show gradual behaviors} only 30\% of the time it happens that training has to be performed at full precision. In the other 70\% 10-bit is enough for training. On the other hand we do not encourage to use 52-bit for \emph{computing precision}. It might be that using reduced but equal formats of \emph{precisions} can perform even better than "all" double configuration.
 	
-	\item Also the format of testing precision shows rooms for improvement. In these five datasets 8-bit for \emph{testing precision} is enough to reach same accuracy as double precision. In this scenario the reduced number of bits impacts on the total consumption of the predictor in terms of energy resources and execution time, with a particular focus of poor hardware devices with limited computing power. 
+	\item Also the format of testing precision shows rooms for improvement. In these five datasets 9-bit for \emph{testing precision} is always enough to reach same accuracy as double precision. In particular, 60\% of the times 6-bit is enough for testing, 30\% of the times 4-bit is enough and once it happens that 2 bits for testing may reach same accuracy of full precision. Figures(\textbf{a},{b}) show how testing with 2-bit and 3-bit respectively, produces similar accuracy of 52-bit In this scenario the reduced number of bits impacts on the total consumption of the predictor in terms of energy resources and execution time, with a particular focus of poor hardware devices with limited computing power. 
+	%, but it requires an higher \emph{computing precision} (purple region is restricted on top graph).
+	%Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. 
+	%Moreover, the following configuration: reading with 2-bit, training with 6-bit, and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.
 \end{itemize}
 
 %% Acknowledgments
