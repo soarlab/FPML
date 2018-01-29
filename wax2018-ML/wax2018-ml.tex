@@ -182,24 +182,29 @@ Others studied the effects of reduced precision on the misprediction rate of the
 focused on the quantization of the classification process~\cite{auguita,SVM}.
 
 
-Our work admire and look forward these analyzers, but we move away from the detection of the minimal floating-point configuration of Perceptron and SVM. 
+In this work, we study the effects of floating-point precision on the accuracy
+of the Perceptron and SVM machine learning algorithms.  We implemented the
+algorithms using multiple-precision numerical libraries, which allows us to
+independently vary the precision of reading the dataset, computing the model,
+and testing of the computed model. We empirically evaluated the
+precision/accuracy trade-offs on several data sets, with a particular focus on
+very small floating-point bit-widths.  Our results and conclusions serve as a
+guideline for making floating-point precision choices when implementing these
+algorithms.
 
-We study what affect the accuracy of these predictors in case of poor floating-point precision computations. Our goal is to empirically show how limited can be the floating-point format while still maintaining high accuracy. Also, we report which step in the lifetime of these predictors is most sensitive to precision tuning. 
-
-
-Our approach is similar because the analysis applies only on mantissa tuning, on the other hand they focus the quantization on the classification process, without taking in consideration both training and reading phases of the algorithm. In this way they do not consider all the dependencies among reading, computing and testing. Moreover, it is not clear what is the precision used for reading during testing. 
+%Our approach is similar because the analysis applies only on mantissa tuning, on the other hand they focus the quantization on the classification process, without taking in consideration both training and reading phases of the algorithm. In this way they do not consider all the dependencies among reading, computing and testing. Moreover, it is not clear what is the precision used for reading during testing. 
 %We detect the best hyperparameter configuration for each dataset before performing any quantization, while the authors adopts the same configuration for all the datasets.
-Although their implementation of SVM differs from our (Gaussian and Linear Kernel), they empirically show that using any precision in the range [52,15] results in same accuracy. 
-At the same time, we are aware of many analyzers that are able to scan a black box algorithm to minimize the precision of each floating-point instruction while still maintaining the desired value of accuracy \cite{reducelam}\cite{mixpreclam}\cite{precimonious}\cite{blame}. 
+%Although their implementation of SVM differs from our (Gaussian and Linear Kernel), they empirically show that using any precision in the range [52,15] results in same accuracy. 
+%At the same time, we are aware of many analyzers that are able to scan a black box algorithm to minimize the precision of each floating-point instruction while still maintaining the desired value of accuracy \cite{reducelam}\cite{mixpreclam}\cite{precimonious}\cite{blame}. 
 
 %Program analysis applied to floating-point instructions usually maintains few 'ghosts' executions of the program, to replicate the behavior of it with different floating-point precisions.\cite{blame}\cite{precimonious}. Once a particular configuration satisfy the evaluation procedure provided by the user, the binary code is altered instructions is injected into the binary code of the program and the candidate result may be evaluated again.\cite{mixpreclam}\cite{reducelam}.
 
 %In particular, the aim of these tools is to produce the minimal configuration of FP instructions such that the output keeps same quality. 
 %These techniques involve both static and dynamic approaches: usually the first is used to detect FP instructions in the program, while the second one produces improvement on the configuration of the solution, also due to 'ghost' executions that verify the current configuration.
 
-Our work admire and look forward these analyzers, but we move away from the detection of the minimal floating-point configuration of Perceptron and SVM. 
+%Our work admire and look forward these analyzers, but we move away from the detection of the minimal floating-point configuration of Perceptron and SVM. 
 
-We study what affect the accuracy of these predictors in case of poor floating-point precision computations. Our goal is to empirically show how limited can be the floating-point format while still maintaining high accuracy. Also, we report which step in the lifetime of these predictors is most sensitive to precision tuning. 
+%We study what affect the accuracy of these predictors in case of poor floating-point precision computations. Our goal is to empirically show how limited can be the floating-point format while still maintaining high accuracy. Also, we report which step in the lifetime of these predictors is most sensitive to precision tuning. 
 
 %We want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating-point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. %
 
