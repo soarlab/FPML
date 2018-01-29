@@ -284,7 +284,8 @@ Our work focuses on tuning the precision of mantissa because we are confident to
 On the other hand, the exponent does not exhibit such behavior.
 
 We decide to split the lifetime of the predictor into three different procedures: (i) reading, (ii) training, (iii) testing. 
-The goal of such separation is to detect what are the dependencies between them. We want to stress the combinations of formats used for representations.
+The goal of such separation is to detect what are the dependencies between them. 
+%We want to stress the combinations of formats used for representations.
 The first impact of our work is to detect a minimum threshold in the precision to adopt for the dataset representation. Minimizing this precision, while still maintaining high values for the accuracy of predictors ($\frac{Correct.Classifications}{Tot.Classifications}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and memory savage\cite{softfloat}.
 We call this parameter: \emph{dataset precision}.
 Once the dataset is masked at the desired floating-point precision, the training procedure of each algorithm imports it independently. The precision used to compute the training is bounded by \emph{computing precision}.
@@ -294,20 +295,20 @@ Finally, the last key point of the analysis is the testing procedure bounded by 
 
 
 \section{Results}
-
-Each \emph{bound} in the analysis spans the range $[2,3,\ldots,9,10,\\23,52]$ for the mantissa format. 
-Before checking combinations of \emph{reading}, \emph{computing}, and \emph{testing}, a preliminary analysis detects the best hyperparameters configuration for each algorithm (and dataset). We have analyzed the following datasets: \emph{fourclass}\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}\cite{UCI}. We performed 4-fold cross validation on each dataset.
+ 
+We have analyzed the following datasets: \emph{fourclass}\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}\cite{UCI}. Before checking combinations of \emph{reading}, \emph{computing}, and \emph{testing}, a preliminary analysis scales each dataset to the interval [-1:1] and it detects the best hyperparameters configuration for each algorithm. We performed 4-fold cross validation on each dataset.
 The code is developed using C++ language, and togheter with graphs and numerical results it is publicly available\cite{FPML}.
 All tests are performed on a desktop machine running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
 All the graphs are obtained using matplotlib library\cite{matplotlib}. 
-Fig.{\ref{results}} reports three samples of the output of the analysis.
+\textbf{Figure {\ref{results}}} reports three samples of the output of the analysis. 
+Each \emph{bound} in the analysis spans the range $[2,3,\ldots,9,10,23,52]$ for the mantissa format.
 Given that our analysis is extremely sensitive to the input dataset, we are highly confident to state the following:
 \begin{itemize}
-	\item The precision used to memorize the dataset can be substantially reduced with respect to single or double precisions. Detecting a minimal threshold value for the \emph{dataset precision} can dramatically impact on the storage space of the dataset. In all the five datasets we analyzed the \emph{precision dataset} does not impact on the final accuracy of the algorithm, meaning that samples can be stored even using only 3-bit for mantissa representation.
+	\item The precision used to store the dataset can be substantially reduced with respect to single or double precisions. Detecting a minimal threshold value for the \emph{dataset precision} can dramatically impact on the storage space required for the dataset. In all the five datasets, reducing the \emph{precision dataset} does not impact on the final accuracy of the algorithm. It means that samples can be stored even using only 3-bit for mantissa representation.
 	
-	\item The \emph{computing precision} is the most critical step in the prediction process of these classifier. Figure1-(\textbf{b}) shows that in case of the \emph{Splice} dataset, SVM has to be trained at the highest precisions (purple strip). Out of 10 analysis (5-AP and 5-SVM)\footnote{We excluded Perceptron from the summary because it is hard to define a numerical threshold for precision, due to the fluctuating behavior of the algorithm.} only 30\% of the time the training has to be performed at full precision, while in the other 70\%, 10-bit is enough. We do not encourage to use 52-bit for \emph{computing precision}. It might be that using reduced but equal formats of \emph{precisions} can perform even better than "all" double configuration.
+	\item The \emph{computing precision} is the most critical step in the prediction process of these classifier. \textbf{Figure 1(b)} shows that in case of the \emph{Splice} dataset, SVM has to be trained at the highest precisions (purple strip). Out of 10 analysis (5-AP and 5-SVM)\footnote{We excluded Perceptron from the summary because it is hard to define a numerical threshold for precision, due to the fluctuating behavior of the algorithm.} only 30\% of the time the training has to be performed at full precision, while in the other 70\% 10-bit is enough. We do not encourage to use 52-bit for \emph{computing precision}. It might be that using reduced but equal formats of \emph{precisions} can perform even better than "all" double configuration.
 	
-	\item Also the format of testing precision shows rooms for improvement. In these five datasets 9-bit for \emph{testing precision} is always enough to reach same accuracy as double precision. In particular, 60\% of the time 6-bit is enough for testing, while 30\% of the time 4-bit is enough and once it happens that using only 2-bit for testing may reach same accuracy of full precision. Figures(\textbf{a},\textbf{b}) show how testing with 2-bit and 3-bit respectively, produces similar accuracy of 52-bit. In this scenario the reduced number of bits impacts on the total consumption of the predictor in terms of energy resources and execution time, with a particular focus of poor hardware devices with limited computing power. 
+	\item Also the format of testing precision shows rooms for improvement. In these five datasets 9-bit for \emph{testing precision} is always enough to reach same accuracy as double precision. In particular, 60\% of the time 6-bit is enough for testing, while 30\% of the time 4-bit is enough, and once it happens that using only 2-bit for testing may reach same accuracy of full precision. \textbf{Figure 1(a,c)} shows how testing with 2-bit and 3-bit respectively, produces similar accuracy of 52-bit. In this scenario the quantization of \emph{testing precision} impacts on the total consumption of the predictor in terms of energy resources and execution time, with a particular focus of poor hardware devices with limited computing power. 
 	%, but it requires an higher \emph{computing precision} (purple region is restricted on top graph).
 	%Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. 
 	%Moreover, the following configuration: reading with 2-bit, training with 6-bit, and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.
