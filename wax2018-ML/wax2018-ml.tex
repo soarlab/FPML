@@ -264,11 +264,14 @@ However, it has been shown that using representations other than these default o
 %It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
 
 The Perceptron algorithm is a supervised learning algorithm~\cite{perceptron}.
-It is a mistake-driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector, which is the main contributor to the classification process. The Perceptron is composed of one neuron with activation function.
+It is a mistake-driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector, which is the main contributor to the classification process. 
+%The Perceptron is composed of one neuron with activation function.
 Particularly interesting in terms of floating-point analysis is the average variant of Perceptron, which
 maintains an average predictor weighted on wrong predictions, and it needs a wider dynamic range for this computation.
 
-SVM\cite{cortes,vapnik} algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
+SVM\cite{cortes,vapnik} algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. 
+%We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. 
+SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
 
 
 
@@ -294,8 +297,10 @@ Finally, the last key point of the analysis is the testing procedure, that is bo
 \section{Results}
 We have analyzed the following datasets: \emph{fourclass}\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}\cite{UCI}. Before performing quantization of precision, a preprocessor scales each dataset to the interval [-1:1], and detects the best hyperparameters configuration for each algorithm. We performed 4-fold cross validation on each dataset.
 The code is developed using C++ language, and together with graphs and numerical results it is publicly available\cite{FPML}.
-All tests are performed on a desktop machine running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM.
+All tests are performed on a PC desktop machine.
+%running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM.
 All the graphs are obtained with matplotlib library\cite{matplotlib}. 
+
 \textbf{Figure {\ref{results}}} reports three samples of the output of the analysis. 
 Each \emph{precision bound} in the analysis spans the range $[2,3,\ldots,9,10,23,52]$ for the mantissa format.
 Given that our analysis is extremely sensitive to the input dataset, we are highly confident to state the following:
