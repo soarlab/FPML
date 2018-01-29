@@ -172,7 +172,7 @@ Floating-point representation was invented to model real numbers in computers. R
 Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform. However, executing floating-point operations can be a major contributor to runtime and energy consumption. For example, Tagliavini et al.~\cite{softfloat} run a set of floating-point applications on a microcontroller, and empirically show that 30\% of the energy consumption was due to floating-points computations and another 20\% due to moving operands between memory and registers.
 Hence, leveraging lower precisions can lead to significant savings, and the impact of low-cost floating-point precisions on machine learning predictors is an active research area.
 
-Several recent papers explore the effects of floating-point and fixed precision reduction on neural networks\cite{gupta,dorefa,Hubara}. Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
+Several recent papers explore the effects of floating-point and fixed precision reduction on neural networks~\cite{gupta,dorefa,Hubara}. Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
 %Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
 %They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE 754 single floating-point representation (32-bit precision). 
 %Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
@@ -187,7 +187,7 @@ of the Perceptron and SVM machine learning algorithms.  We implemented the
 algorithms using multiple-precision numerical libraries, which allows us to
 independently vary the precision of reading the dataset, computing the model,
 and testing of the computed model. We empirically evaluated the
-precision/accuracy trade-offs on several data sets, with a particular focus on
+precision/accuracy trade-offs on several datasets, with a particular focus on
 very small floating-point bit-widths.  Our results and conclusions serve as a
 guideline for making floating-point precision choices when implementing these
 algorithms.
@@ -259,17 +259,17 @@ algorithms.
 \section{Methodology}
 
 The format adopted for floating-point representation consists of the sign of the number, significand (mantissa), and exponent. 
-This format is part of the IEEE 754 standard\cite{IEEE}, which includes, among others, two well-known and popular representations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
+This format is part of the IEEE 754 standard~\cite{IEEE}, which includes, among others, two well-known and popular representations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
 However, it has been shown that using representations other than these default ones can be beneficial in many applications to improve runtime and energy efficiency~\cite{softfloat}, which is what we explore in this work.
 %It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
 
-The Perceptron algorithm is a supervised learning algorithm~\cite{perceptron}.
+The Perceptron algorithm~\cite{perceptron} is a supervised learning algorithm.
 It is a mistake-driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector, which is the main contributor to the classification process. 
 %The Perceptron is composed of one neuron with activation function.
 Particularly interesting in terms of floating-point analysis is the average variant of Perceptron, which
 maintains an average predictor weighted on wrong predictions, and it needs a wider dynamic range for this computation.
 
-SVM\cite{cortes,vapnik} algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. 
+The SVM algorithm~\cite{cortes,vapnik} also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. 
 %We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. 
 SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
 
@@ -278,33 +278,46 @@ SVM is trained using a stochastic sub-gradient descent method, whose goal is to 
 We implemented Perceptron (P), Average Perceptron (AP), and SVM algorithms using
 multiple-precision numerical libraries MPFR~\cite{MPFR} and
 FlexFloat~\cite{softfloat}.
-%such that each floating-point instruction can be bounded by a desired floating-point format. 
-These libraries allow the developer to express how many bits are assigned to mantissa and exponent of each floating-point instruction.
+%such that each floating-point instruction can be bounded by a desired floating-point format.
+This allows us to specify how many bits are assigned to mantissa and exponent of each floating-point instruction.
 %As a result, our analysis spans lowest format configurations allowed for mantissa representation.
 %In case of exception (only for lack of dynamic range, a lack of precision for mantissa never produces exception) the procedure is stopped, the exponent is increased, and the algorithm starts again.
-Our work focuses on reducing the precision of mantissa because we are confident to say that mantissa may show gradual improvement on the final accuracy on the predictor.
-On the other hand, the exponent does not exhibit such behavior.
+We mainly focus on varying the mantissa bits, since exponent does not play a
+major role in influencing the accuracy once it is large enough that exceptions
+(e.g., overflow, underflow) do not appear.
 
-We decide to analyze the impact of quantization on three different procedures of the predictor: (i) reading, (ii) training, (iii) testing. 
+
+We analyze the accuracy impact of precision of the three main learning
+algorithm stages: reading the dataset, training, and testing.
 %The goal is to detect which dependencies exist between them. 
 %We want to stress the combinations of formats used for representations.
 %The first goal of our work is to detect a minimum threshold in the precision to adopt for the dataset storing. 
-The first goal of out work is to minimize the storage format of the dataset.
+Storing and reading the dataset in low precision potentially leads to savings in memory traffic.
+%The first goal of out work is to minimize the storage format of the dataset.
 %Minimizing this precision, while still maintaining high values for the accuracy of predictors ($\frac{Correct.Classifications}{Tot.Classifications}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and storage space\cite{softfloat}.
-We call this parameter: \emph{dataset precision}.
-Once the dataset is masked at the desired floating-point precision, the training procedure of each algorithm imports it independently. The precision used to compute the training is bounded by \emph{computing precision}.
-The interface between reading and computing receives in input the dataset from the parsing procedure and adapt it to the bound fixed by \emph{computing precision}. 
-%In the result section, we will see what is the impact of this parameter on a set of five datasets.
-Finally, the last key point of the analysis is the testing procedure, that is bounded by \emph{testing precision}. %For testing the parser imports the dataset at the \emph{dataset precision}.
-\section{Results}
-We have analyzed the following five datasets: \emph{fourclass}\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}\cite{UCI}. Before performing quantization of precision, a preprocessor scales each dataset to the interval [-1:1], and detects the best hyperparameters configuration for each algorithm. We performed 4-fold cross validation on each dataset.
-The code is developed using C++ language, and together with graphs and numerical results it is publicly available\cite{FPML}.
-All tests are performed on a PC desktop machine.
-%running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM.
-All the graphs are obtained with matplotlib library\cite{matplotlib}. 
+%We call this parameter: \emph{dataset precision}.
+Once the dataset is read at the desired floating-point precision, the training
+procedure of an algorithm executes with the specified training precision.
+Finally, the generated model is passed to the testing procedure,
+executed with the specified testing precision.
+We measure the accuracy of the model by performing a 4-fold cross-validation on each dataset.
 
-\textbf{Figure {\ref{results}}} reports three samples of the output of the analysis. 
-Each \emph{precision bound} in the analysis spans the range $[2,3,\ldots,9,10,23,52]$ for the mantissa format.
+
+
+\section{Results}
+
+We used the following five datasets for our empirical evaluation: \emph{fourclass}~\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}~\cite{UCI}.
+They range in size between 270--1000 samples and 2--60 features.
+Before training, we scale each dataset to the interval $[-1,1]$, and detect a
+good hyper-parameters configuration for each algorithm.
+We made the source code and detailed results publicly available~\cite{FPML}.
+%All tests are performed on a PC desktop machine.
+%running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM.
+%All the graphs are obtained with matplotlib library\cite{matplotlib}. 
+
+Figure~\ref{results} shows several representative and interesting graphs we generated.
+We vary the number of mantissa bits in the range 
+$[2,3,\ldots,9,10,23,52]$.
 Given that our analysis is extremely sensitive to the input dataset, we are highly confident to state the following:
 \begin{itemize}
 	\item The precision used to store the dataset can be substantially reduced with respect to single or double precisions. Detecting a minimal threshold value for the \emph{dataset precision} can dramatically impact on the storage space required for the dataset. In all the five datasets, reducing the \emph{precision dataset} does not impact on the final accuracy of the algorithm. It means that samples can be stored even using only 3-bit for mantissa representation.
