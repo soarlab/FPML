@@ -2,7 +2,7 @@ import numpy
 import sys
 
 ### Modify with correct path ###
-filenamePath="../tmp/local/german/german"
+filenamePath="./sonar"
 ################################
 data=[]
 nAttributes=0

@@ -24,8 +24,8 @@ LexponentTest=[10];
 ############
 
 #### Mantissa Configuration
-LmantissaDataset=[2,3,4,5,6,7,8,9,10,23,52];
-LmantissaComputation=[2,3,4,5,6,7,8,9,10,23,52];
+LmantissaDataset=[52];
+LmantissaComputation=[52];
 LmantissaTest=[2,3,4,5,6,7,8,9,10,23,52];
 ###########################
 
@@ -47,7 +47,7 @@ for fileName in os.listdir(pathDatasets):
 		else:
 			print "ERROR COMPILER(1)!!"
 			sys.exit()
-			
+
 		with open(path+"conf.txt") as f:
 			conf=f.readlines()
 		

@@ -15,22 +15,22 @@
 //When parameters are not injected by the analysis (with the execute.py), it means the flexfloat is used in hyperparameter detection mode.
 //Hyperparameter detection is done with 115-bit format.
 #ifndef datasetMantissa
-	#define datasetMantissa 100
+	#define datasetMantissa 52
 #endif
 #ifndef datasetExponent
-	#define datasetExponent 15
+	#define datasetExponent 11
 #endif
 #ifndef computationMantissa
-	#define computationMantissa 100
+	#define computationMantissa 52
 #endif
 #ifndef computationExponent
-	#define computationExponent 15
+	#define computationExponent 11
 #endif
 #ifndef testMantissa
-	#define testMantissa 100
+	#define testMantissa 52
 #endif
 #ifndef testExponent
-	#define testExponent 15
+	#define testExponent 11
 #endif
 #ifndef analysis
 	//It means that the FP analysis is not performed, instead the flexfloat is used to detect the best configuration of hyperparameters.
@@ -234,18 +234,18 @@ void printBestConfiguration(ofstream &confFile,string label, map<string,vector<d
 	double max=0;
 	string best="";
 	for(map<string, vector<double> >::const_iterator it = myMap.begin(); it != myMap.end(); ++it) {
-		//cout <<label<<" "<< it->first<< " ";
+		cout <<label<<" "<< it->first<< " ";
 		double acc=0;
 		for(auto val:it->second){	
 			acc=acc+val;
-			//cout<< to_string(val)<<" ";
+			cout<< to_string(val)<<" ";
 		}
 		acc=acc/((it->second).size());
 		if (acc>max){
 			max=acc;
 			best=it->first+ ",Acc:" + to_string(acc);	
 		}
-		//cout <<label<<" Mean: "+to_string(acc)+"\n";
+		cout <<label<<" Mean: "+to_string(acc)+"\n";
 	}
 	cout << label<<" Best: " << best<<"\n";
 	confFile<<label<<","<<best<<"\n";
@@ -332,7 +332,6 @@ int main(int argc, char* argv[]){
 		learningRatesAverage={stod(argv[7])};
 		epochsVectAverage={stoi(argv[8])};
 	}
-	
 	for (int i=1;i<5;i++){
 		if (analysis){
 			trainingSVM.open(fileName+"FLEX/part"+to_string(i)+"SVMTrain.txt",std::ofstream::app);
@@ -371,9 +370,10 @@ int main(int argc, char* argv[]){
 		//SVM
 		for (flexfloat<computationExponent, computationMantissa> &learningRate:learningRatesSVM){
 			for(flexfloat<computationExponent, computationMantissa> &C:CRegularizersSVM){
-				flexfloat<computationExponent, computationMantissa> updateLearningRate={0};
-				vector<flexfloat<computationExponent, computationMantissa>> weights(matrix[0].size(),0);
 				for(int epochs:epochsVectSVM){
+					flexfloat<computationExponent, computationMantissa> updateLearningRate={0};
+					vector<flexfloat<computationExponent, computationMantissa>> weights(matrix[0].size(),0);
+
 					for (int epoch=0;epoch<epochs;epoch++){
 						SVM(matrix,label,weights,C,learningRate);
 						shuffleData(matrix,label);
@@ -477,11 +477,11 @@ int main(int argc, char* argv[]){
 		}
 	}
 	if (!analysis){
-		//printBestConfiguration(outConfFile,"SVM Train",myMapTrainingSVM);
+		printBestConfiguration(outConfFile,"SVM Train",myMapTrainingSVM);
 		printBestConfiguration(outConfFile,"SVM",myMapTestSVM);
-		//printBestConfiguration(outConfFile,"Perceptron Train",myMapTrainingP);
+		printBestConfiguration(outConfFile,"Perceptron Train",myMapTrainingP);
 		printBestConfiguration(outConfFile,"Perceptron",myMapTestP);
-		//printBestConfiguration(outConfFile,"Average Train",myMapTrainingAP);
+		printBestConfiguration(outConfFile,"Average Train",myMapTrainingAP);
 		printBestConfiguration(outConfFile,"Average",myMapTestAP);
 		outConfFile.close();
 	}
