@@ -251,29 +251,30 @@ algorithms.
 		%and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}{\tiny }
 	\end{subfigure}
 	\hspace*{\fill}%
-	\caption{\small{Graphs showing accuracy for various precision regimes. In each pair of graphs a different dataset is considered. Two different \emph{testing precision} are compared (top and bottom). \textbf{AP} stands for average Perceptron while \textbf{SVM} for Support Vector Machine. Each graph reports on the \textbf{R} axis the \emph{reading precision} and on \textbf{C} axis the \emph{computing precision}. For example, the label (2,10) represents 2-bit for mantissa and 10-bit for the exponent. The third axis represent the final accuracy of the algorithm. }}
+	\caption{Accuracy for various precision regimes. Graphs compare two chosen testing precisions (top and bottom) on different datasets. Axis $R$ denotes reading precision, $C$ computing precision, and the third axis shows the accuracy. For example, $(2,10)$ represents a 2-bit mantissa and 10-bit exponent.}
 	\label{results}
 \end{figure*}
 
 
-\section{Background}
+\section{Methodology}
 
 The format adopted for floating-point representation consists of the sign of the number, significand (mantissa), and exponent. 
 This format is part of the IEEE 754 standard\cite{IEEE}, which includes, among others, two well-known and popular resentations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
-However, it has been shown that using representations other than these ``default'' ones can be beneficial in many applications to improve runtime and energy efficiency~\cite{softfloat}, which is what we explore in this work.
+However, it has been shown that using representations other than these default ones can be beneficial in many applications to improve runtime and energy efficiency~\cite{softfloat}, which is what we explore in this work.
 %It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
 
-The Perceptron algorithm is a supervised learning algorithm invented by Frank Rosenblatt\cite{perceptron}.
-It is a mistake-driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector, which is the main contributor to the classification process. The Perceptron is composed of one neuron with activation function (LTU).
-Particularly interesting in terms of floating-point analysis is the average variant of vanilla Perceptron. 
-The average Perceptron maintains an average predictor weighted on wrong predictions, and it needs a wider dynamic range for this computation.
+The Perceptron algorithm is a supervised learning algorithm~\cite{perceptron}.
+It is a mistake-driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector, which is the main contributor to the classification process. The Perceptron is composed of one neuron with activation function.
+Particularly interesting in terms of floating-point analysis is the average variant of Perceptron, which
+maintains an average predictor weighted on wrong predictions, and it needs a wider dynamic range for this computation.
 
 SVM\cite{cortes}\cite{vapnik} algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
 
 
-\section{Methodology}
 
-We implemented Perceptron and SVM algorithms using numerical libraries MPFR~\cite{MPFR} and FlexFloat~\cite{softfloat}. 
+We implemented Perceptron (P), Average Perceptron (AP), and SVM algorithms using
+multiple-precision numerical libraries MPFR~\cite{MPFR} and
+FlexFloat~\cite{softfloat}.
 %such that each floating-point instruction can be bounded by a desired floating-point format. 
 These libraries allow the developer to express how many bits are assigned to mantissa and exponent of each floating-point instruction.
 As a result, our analysis spans lowest format configurations allowed for mantissa representation.
