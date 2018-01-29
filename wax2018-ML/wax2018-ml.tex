@@ -2,6 +2,7 @@
 \documentclass[sigplan,review=false,anonymous=false]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 \renewcommand\footnotetextcopyrightpermission[1]{}
 \pagestyle{plain}
+\usepackage{flushend}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
 %% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
@@ -297,7 +298,7 @@ Storing and reading the dataset in low precision potentially leads to savings in
 %Minimizing this precision, while still maintaining high values for the accuracy of predictors ($\frac{Correct.Classifications}{Tot.Classifications}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and storage space\cite{softfloat}.
 %We call this parameter: \emph{dataset precision}.
 Once the dataset is read at the desired floating-point precision, the training
-procedure of an algorithm executes with the specified training precision.
+procedure of an algorithm executes with the specified computing precision.
 Finally, the generated model is passed to the testing procedure,
 executed with the specified testing precision.
 We measure the accuracy of the model by performing a 4-fold cross-validation on each dataset.
@@ -310,25 +311,50 @@ We used the following five datasets for our empirical evaluation: \emph{fourclas
 They range in size between 270--1000 samples and 2--60 features.
 Before training, we scale each dataset to the interval $[-1,1]$, and detect a
 good hyper-parameters configuration for each algorithm.
+We vary the number of mantissa bits for reading, training, and testing in the range 
+$[2,3,\ldots,9,10,23,52]$.
 We made the source code and detailed results publicly available~\cite{FPML}.
 %All tests are performed on a PC desktop machine.
 %running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM.
 %All the graphs are obtained with matplotlib library\cite{matplotlib}. 
+%
+Figure~\ref{results} shows several representative and interesting graphs we generated,
+and in the rest of this section we discuss several key observations.
 
-Figure~\ref{results} shows several representative and interesting graphs we generated.
-We vary the number of mantissa bits in the range 
-$[2,3,\ldots,9,10,23,52]$.
-Given that our analysis is extremely sensitive to the input dataset, we are highly confident to state the following:
-\begin{itemize}
-	\item The precision used to store the dataset can be substantially reduced with respect to single or double precisions. Detecting a minimal threshold value for the \emph{dataset precision} can dramatically impact on the storage space required for the dataset. In all the five datasets, reducing the \emph{precision dataset} does not impact on the final accuracy of the algorithm. It means that samples can be stored even using only 3-bit for mantissa representation.
-	
-	\item The \emph{computing precision} is the most critical step in the prediction process of these classifier. \textbf{Figure 1(b)} shows that in case of the \emph{Splice} dataset, SVM has to be trained at the highest precisions (purple strip). Out of 10 analysis (5-AP and 5-SVM)\footnote{We excluded Perceptron from the summary because it is hard to define a numerical threshold for precision, due to the fluctuating behavior of the algorithm (zigzag).} only 30\% of the time the training has to be performed at full precision, while in the other 70\% 10-bit is enough. We do not encourage to use 52-bit for \emph{computing precision} because it might be that using reduced but equal formats of \emph{precisions} result in better accuracy than "all" double configuration.
-	
-	\item Precision format for \emph{testing precision} shows rooms for improvement. In these five datasets 9-bit for \emph{testing precision} is always enough to reach same accuracy as double precision. In particular, 60\% of the time 6-bit is enough for testing, while 30\% of the time 4-bit is enough, and finally in one case it happens that using only 2-bit for testing may reach same accuracy of full precision. \textbf{Figure 1(a,c)} shows how testing with 2-bit and 3-bit respectively, produces similar accuracy of 52-bit. In this scenario the quantization of \emph{testing precision} impacts on the total consumption of the predictor in terms of energy resources and execution time, with a particular focus of poor hardware devices with limited computing power. 
+The precision used to store and read the dataset can be substantially reduced
+with respect to single or double precisions. This is encouraging since
+detecting a minimal threshold value for the reading precision can significantly
+reduce memory traffic.  In all our datasets, reducing the reading precision
+does not have a noticeable impact on the final accuracy --- samples can be
+stored even using only 3 bits for mantissa.
+
+The computing precision is the most critical and sensitive parameter. For
+example, Figure~\ref{results}(b) shows that in case of the \emph{Splice}
+dataset, SVM has to be trained at the highest (double) precision to achieve
+good accuracy.  To summarize, out of 10 analysis runs (5 AP and 5 SVM) only
+30\% of the time training has to be performed at double precision, while in the
+rest 10 bits is enough.  (Note that we excluded Perceptron from the summary
+because it is hard to observe a precision threshold due to its erratic behavior
+in terms of accuracy.)
+
+The testing precision can often be substantially reduced without having a major
+impact on the accuracy.
+For our five datasets, using 9 bits mantissa for testing is always enough to
+reach the same accuracy as double precision. More precisely, 60\% of the time 6 bits
+is enough, while 30\% of the time 4 bits is enough.
+Finally, in one case using only 2 bits for testing achieves similar accuracy
+as double precision.
+Figures~\ref{results}(a,c) show how testing with just 2 and
+3 bits produces accuracy similar to using double (52 bits).
+This is particularly important for deployment scenarios where training is
+performed on large machines potentially using double precision, but the learned
+models are deployed to for example mobile platforms using very low precision to
+conserve energy.
+
+
 	%, but it requires an higher \emph{computing precision} (purple region is restricted on top graph).
 	%Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. 
 	%Moreover, the following configuration: reading with 2-bit, training with 6-bit, and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.
-\end{itemize}
 
 %% Acknowledgments
 %\begin{acks}                            %% acks environment is optional
