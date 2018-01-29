@@ -231,9 +231,7 @@ We study what affect the accuracy of these predictors in case of poor floating-p
 		%and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}{\tiny }
 	\end{subfigure}
 	\hspace*{\fill}%
-	\caption{\small{In each pair of graphs (\textbf{a,b,c}) a different dataset is considered. Two different \emph{testing precision} are compared (top and bottom). \textbf{AP} stands for average Perceptron while \textbf{SVM} for Support Vector Machine. Each graph reports on the \textbf{R} axis the \emph{reading precision} and on \textbf{C} axis the \emph{computing precision}. For example, the label (2,10) represents 2-bit for mantissa and 10-bit for the exponent. The third axis represent the final accuracy of the algorithm. Figure(\textbf{a}) shows how testing with 2-bit produces similar accuracy of 52-bit, but it requires higher \emph{computing precision} (purple region is restricted on top graph).
-	Figure(\textbf{b}) shows that for the Splice dataset, training has to be done at highest precisions (purple strip). On the other hand testing with 7-bit reaches same accuracy of 52-bit. 
-	Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. Moreover, reading with 2-bit, training with 6-bit and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.}}
+	\caption{\small{Graphs showing accuracy for various precision regimes. In each pair of graphs a different dataset is considered. Two different \emph{testing precision} are compared (top and bottom). \textbf{AP} stands for average Perceptron while \textbf{SVM} for Support Vector Machine. Each graph reports on the \textbf{R} axis the \emph{reading precision} and on \textbf{C} axis the \emph{computing precision}. For example, the label (2,10) represents 2-bit for mantissa and 10-bit for the exponent. The third axis represent the final accuracy of the algorithm. }}
 	\label{results}
 \end{figure*}
 
@@ -272,10 +270,11 @@ Once the dataset is masked at the desired floating-point precision, the training
 The interface between reading and computing receives in input the dataset from the parsing procedure and adapt it to the bound fixed by \emph{computing precision}. 
 In the result section, we will see what is the impact of this parameter on a set of five datasets.
 Finally, the last key point of the analysis is the testing procedure bounded by \emph{testing precision}. For testing the parser imports the dataset at the \emph{dataset precision}.
-%\newpage
+
+
 \section{Results}
-%Our analysis consists in the implementation of Perceptron (average Variant) and SVM using MPFR\cite{MPFR} library. 
-Each \emph{bound} in the analysis spans the range $[2,3,..,9,\\10,23,52]$ for the mantissa format. 
+
+Each \emph{bound} in the analysis spans the range $[2,3,\ldots,9,10,23,52]$ for the mantissa format. 
 Before checking combinations of \emph{reading}, \emph{computing}, and \emph{testing}, a preliminary analysis detects the best hyperparameters configuration for each algorithm (and dataset). We have run the analysis on the following datasets: \emph{fourclass}\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}\cite{UCI}. Each dataset is split in four parts to perform cross validation.
 The code is developed using C++ language, and togheter with graphs and numerical results it is publicly available\cite{FPML}.
 All tests are performed on a desktop machine running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
@@ -283,6 +282,9 @@ These graphs are obtained using matplotlib library\cite{matplotlib}.
 
 Fig.{\ref{results}} reports three samples of the output of the analysis.
 A common behavior for these datasets is that tuning the \emph{dataset precision} does not impact on the final accuracy of the predictor.
+Figure(\textbf{a}) shows how testing with 2-bit produces similar accuracy of 52-bit, but it requires higher \emph{computing precision} (purple region is restricted on top graph).
+	Figure(\textbf{b}) shows that for the Splice dataset, training has to be done at highest precisions (purple strip). On the other hand testing with 7-bit reaches same accuracy of 52-bit. 
+	Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. Moreover, reading with 2-bit, training with 6-bit and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.
 
 %% Acknowledgments
 %\begin{acks}                            %% acks environment is optional
