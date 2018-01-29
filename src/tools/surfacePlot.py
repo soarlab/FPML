@@ -26,9 +26,9 @@ def getAccuracy(val):
 data=[]
 
 ### Configuration ###
-#Select from AP, SVM, P
+#Select between AP, SVM, P
 algoritmh="AP"
-folder="/home/roki/GIT/src/final/heart/"
+folder="/home/roki/GIT/src/datasets/german/"
 #####################
 
 ### Note: the script can save the graphs in the folder: /folder/GRAPHS/*. To do it just remove comment from line 124 'fig.savefig'

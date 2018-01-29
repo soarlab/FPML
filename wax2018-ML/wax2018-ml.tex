@@ -231,7 +231,7 @@ We study what affect the accuracy of these predictors in case of poor floating-p
 		%and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}{\tiny }
 	\end{subfigure}
 	\hspace*{\fill}%
-	\caption{\small{In each pair of graphs (\textbf{a,b,c}) a different dataset is considered. Two different \emph{testing precision} are compared (top and bottom). \textbf{AP} stands for average Perceptron while \textbf{SVM} for Support Vector Machine. Each graph reports on the \textbf{R} axis the \emph{reading precision} and on \textbf{C} axis the \emph{computing precision}. The third axis represent the final accuracy of the algorithm. Figure(\textbf{a}) shows how testing with 2-bit produces similar accuracy of 52-bit, but it requires higher \emph{computing precision} (purple region is restricted on top graph).
+	\caption{\small{In each pair of graphs (\textbf{a,b,c}) a different dataset is considered. Two different \emph{testing precision} are compared (top and bottom). \textbf{AP} stands for average Perceptron while \textbf{SVM} for Support Vector Machine. Each graph reports on the \textbf{R} axis the \emph{reading precision} and on \textbf{C} axis the \emph{computing precision}. For example, the label (2,10) represents 2-bit for mantissa and 10-bit for the exponent. The third axis represent the final accuracy of the algorithm. Figure(\textbf{a}) shows how testing with 2-bit produces similar accuracy of 52-bit, but it requires higher \emph{computing precision} (purple region is restricted on top graph).
 	Figure(\textbf{b}) shows that for the Splice dataset, training has to be done at highest precisions (purple strip). On the other hand testing with 7-bit reaches same accuracy of 52-bit. 
 	Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. Moreover, reading with 2-bit, training with 6-bit and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.}}
 	\label{results}
@@ -242,8 +242,8 @@ This format is part of the IEEE 754 standard\cite{IEEE} which includes, among ot
 However, it has been shown that using format other than the "defaults" can be beneficial in many applications\cite{softfloat}.
 %It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
 
-The Perceptron algorithm is a supervised learning algorithm invented by Frank Rosenblatt\cite{perceptron}. The goal of the predictor is to train a linear decision boundary on a set of labeled samples to classify unknown data in the future.
-The Perceptron is a mistake driven algorithm: once a sample is misclassified the predictor is updated but not necessary classified correctly. The update step involves the weight vector, the main actor in the classification process. The implementation of Perceptron is formed by one neuron with activation function (LTU).
+The Perceptron algorithm is a supervised learning algorithm invented by Frank Rosenblatt\cite{perceptron}.
+It is a mistake driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector, the main actor in the classification process. The Perceptron is composed by one neuron with activation function (LTU).
 Particularly interesting in terms of floating-point analysis is the average variant of vanilla Perceptron. 
 The average Perceptron maintains an average predictor weighted on wrong predictions and it needs a wider dynamic range to compute the mean.
 

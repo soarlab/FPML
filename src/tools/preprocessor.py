@@ -1,7 +1,10 @@
 import numpy
 import sys
-data=[]
+
+### Modify with correct path ###
 filenamePath="../tmp/local/german/german"
+################################
+data=[]
 nAttributes=0
 with open(filenamePath+".txt") as f:
 	data=f.readlines()
