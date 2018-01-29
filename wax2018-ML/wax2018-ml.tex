@@ -1,5 +1,7 @@
 %% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
 \documentclass[sigplan,review=false,anonymous=false]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\pagestyle{plain}
 %% For double-blind review submission, w/ CCS and ACM Reference
 %\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true}
 %% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
@@ -14,11 +16,11 @@
 %% Supplied to authors by publisher for camera-ready submission;
 %% use defaults for review submission.
 
-\acmConference[]{}
-\acmYear{}
-\acmISBN{} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
-\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
-\startPage{}
+%\acmConference[]{Workshop on Approximate Computing Across the Stack}
+%\acmYear{2018}
+%\acmISBN{978-x-xxxx-xxxx-x/YY/MM}
+%\acmDOI{10.1145/nnnnnnn.nnnnnnn}
+%\startPage{}
 
 %% Copyright information
 %% Supplied to authors (based on authors' rights management selection;
@@ -28,7 +30,7 @@
 %\setcopyright{acmcopyright}
 %\setcopyright{acmlicensed}
 %\setcopyright{rightsretained}
-\copyrightyear{}           %% If different from \acmYear
+%\copyrightyear{}           %% If different from \acmYear
 
 %% Bibliography style
 \bibliographystyle{ACM-Reference-Format}
@@ -167,15 +169,25 @@ Our analysis in particular focuses on very small floating-point bit-widths (i.e.
 \maketitle
 \section{Introduction}
 Floating-point representation was invented to model real numbers in computers. Representing real numbers as a finite sequence of bits naturally introduces approximation, which leads to errors in computations~\cite{WhatEvery}. 
-Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform~\cite{softfloat}. However, executing floating-point operations is a major contributor to runtime and energy consumption, and hence leveraging lower precisions can lead to significant savings. In \cite{softfloat} the authors run a set of highly demanding floating-point applications on a micro-controller unit, and they empirically shown that 30\% of the energy consumption of the core was due to floating-points computations and another 20\% to moving operands between memory and registers.
-The impact of low-cost floating-point precisions on machine learning predictors is an active research area.
-For example, several recent papers explore the effects of both floating-point and fixed precision reduction on neural networks\cite{gupta,dorefa,Hubara}. Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
+Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform. However, executing floating-point operations can be a major contributor to runtime and energy consumption. For example, Tagliavini et al.~\cite{softfloat} run a set of floating-point applications on a microcontroller, and empirically show that 30\% of the energy consumption was due to floating-points computations and another 20\% due to moving operands between memory and registers.
+Hence, leveraging lower precisions can lead to significant savings, and the impact of low-cost floating-point precisions on machine learning predictors is an active research area.
+
+Several recent papers explore the effects of floating-point and fixed precision reduction on neural networks\cite{gupta,dorefa,Hubara}. Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
 %Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
 %They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE 754 single floating-point representation (32-bit precision). 
 %Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
 %Hubara et al.\cite{Hubara} introduce a method to train Quantized-Neural-Networks (QNNs) using low precision arithmetic.
 %They showed how using 4 bits for weights and activation step result in a degradation of 5.5\% compared to 32-bit single precision.
-In \cite{auguita}\cite{SVM} the authors study the effects of reduced precision on the misprediction rate of the SVM algorithm, and compare it with the "all double" implementation. In particular, in \cite{SVM} the authors focus on the SVM predictor. Our approach is similar because the analysis applies only on mantissa tuning, on the other hand they focus the quantization on the classification process, without taking in consideration both training and reading phases of the algorithm. In this way they do not consider all the dependencies among reading, computing and testing. Moreover, it is not clear what is the precision used for reading during testing. 
+Others studied the effects of reduced precision on the misprediction rate of the SVM algorithm, and
+focused on the quantization of the classification process~\cite{auguita,SVM}.
+
+
+Our work admire and look forward these analyzers, but we move away from the detection of the minimal floating-point configuration of Perceptron and SVM. 
+
+We study what affect the accuracy of these predictors in case of poor floating-point precision computations. Our goal is to empirically show how limited can be the floating-point format while still maintaining high accuracy. Also, we report which step in the lifetime of these predictors is most sensitive to precision tuning. 
+
+
+Our approach is similar because the analysis applies only on mantissa tuning, on the other hand they focus the quantization on the classification process, without taking in consideration both training and reading phases of the algorithm. In this way they do not consider all the dependencies among reading, computing and testing. Moreover, it is not clear what is the precision used for reading during testing. 
 %We detect the best hyperparameter configuration for each dataset before performing any quantization, while the authors adopts the same configuration for all the datasets.
 Although their implementation of SVM differs from our (Gaussian and Linear Kernel), they empirically show that using any precision in the range [52,15] results in same accuracy. 
 At the same time, we are aware of many analyzers that are able to scan a black box algorithm to minimize the precision of each floating-point instruction while still maintaining the desired value of accuracy \cite{reducelam}\cite{mixpreclam}\cite{precimonious}\cite{blame}. 
@@ -189,7 +201,9 @@ Our work admire and look forward these analyzers, but we move away from the dete
 
 We study what affect the accuracy of these predictors in case of poor floating-point precision computations. Our goal is to empirically show how limited can be the floating-point format while still maintaining high accuracy. Also, we report which step in the lifetime of these predictors is most sensitive to precision tuning. 
 
-%We want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating-point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. % 
+%We want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating-point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. %
+
+
 \begin{figure*}
 	\hspace*{\fill}%
 	\begin{subfigure}[b]{0.29\linewidth}
