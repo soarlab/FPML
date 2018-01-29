@@ -259,7 +259,7 @@ algorithms.
 \section{Methodology}
 
 The format adopted for floating-point representation consists of the sign of the number, significand (mantissa), and exponent. 
-This format is part of the IEEE 754 standard\cite{IEEE}, which includes, among others, two well-known and popular resentations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
+This format is part of the IEEE 754 standard\cite{IEEE}, which includes, among others, two well-known and popular representations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
 However, it has been shown that using representations other than these default ones can be beneficial in many applications to improve runtime and energy efficiency~\cite{softfloat}, which is what we explore in this work.
 %It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
 
@@ -268,7 +268,7 @@ It is a mistake-driven algorithm: once a sample is misclassified the predictor i
 Particularly interesting in terms of floating-point analysis is the average variant of Perceptron, which
 maintains an average predictor weighted on wrong predictions, and it needs a wider dynamic range for this computation.
 
-SVM\cite{cortes}\cite{vapnik} algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
+SVM\cite{cortes,vapnik} algorithm also produces a linear classifier, but it differs from Perceptron in the way the hyperplane is obtained. It is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
 
 
 
@@ -284,31 +284,31 @@ Our work focuses on tuning the precision of mantissa because we are confident to
 On the other hand, the exponent does not exhibit such behavior.
 
 We decide to split the lifetime of the predictor into three different procedures: (i) reading, (ii) training, (iii) testing. 
-The goal of such separation is to detect what are the dependencies between them. 
+The goal is to detect which dependencies exist between them. 
 %We want to stress the combinations of formats used for representations.
 The first impact of our work is to detect a minimum threshold in the precision to adopt for the dataset representation. Minimizing this precision, while still maintaining high values for the accuracy of predictors ($\frac{Correct.Classifications}{Tot.Classifications}$) results in enormous saving in terms of architecture complexity, energy consumption, computational effort, and memory savage\cite{softfloat}.
 We call this parameter: \emph{dataset precision}.
 Once the dataset is masked at the desired floating-point precision, the training procedure of each algorithm imports it independently. The precision used to compute the training is bounded by \emph{computing precision}.
 The interface between reading and computing receives in input the dataset from the parsing procedure and adapt it to the bound fixed by \emph{computing precision}. 
-In the result section, we will see what is the impact of this parameter on a set of five datasets.
+%In the result section, we will see what is the impact of this parameter on a set of five datasets.
 Finally, the last key point of the analysis is the testing procedure bounded by \emph{testing precision}. For testing the parser imports the dataset at the \emph{dataset precision}.
 
 
 \section{Results}
  
-We have analyzed the following datasets: \emph{fourclass}\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}\cite{UCI}. Before checking combinations of \emph{reading}, \emph{computing}, and \emph{testing}, a preliminary analysis scales each dataset to the interval [-1:1] and it detects the best hyperparameters configuration for each algorithm. We performed 4-fold cross validation on each dataset.
+We have analyzed the following datasets: \emph{fourclass}\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}\cite{UCI}. Before performing quantization of precision, the preliminary analysis scales each dataset to the interval [-1:1], and detects the best hyperparameters configuration for each algorithm. We performed 4-fold cross validation on each dataset.
 The code is developed using C++ language, and togheter with graphs and numerical results it is publicly available\cite{FPML}.
 All tests are performed on a desktop machine running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM. 
-All the graphs are obtained using matplotlib library\cite{matplotlib}. 
+All the graphs are obtained with matplotlib library\cite{matplotlib}. 
 \textbf{Figure {\ref{results}}} reports three samples of the output of the analysis. 
-Each \emph{bound} in the analysis spans the range $[2,3,\ldots,9,10,23,52]$ for the mantissa format.
+Each \emph{precision bound} in the analysis spans the range $[2,3,\ldots,9,10,23,52]$ for the mantissa format.
 Given that our analysis is extremely sensitive to the input dataset, we are highly confident to state the following:
 \begin{itemize}
 	\item The precision used to store the dataset can be substantially reduced with respect to single or double precisions. Detecting a minimal threshold value for the \emph{dataset precision} can dramatically impact on the storage space required for the dataset. In all the five datasets, reducing the \emph{precision dataset} does not impact on the final accuracy of the algorithm. It means that samples can be stored even using only 3-bit for mantissa representation.
 	
-	\item The \emph{computing precision} is the most critical step in the prediction process of these classifier. \textbf{Figure 1(b)} shows that in case of the \emph{Splice} dataset, SVM has to be trained at the highest precisions (purple strip). Out of 10 analysis (5-AP and 5-SVM)\footnote{We excluded Perceptron from the summary because it is hard to define a numerical threshold for precision, due to the fluctuating behavior of the algorithm.} only 30\% of the time the training has to be performed at full precision, while in the other 70\% 10-bit is enough. We do not encourage to use 52-bit for \emph{computing precision}. It might be that using reduced but equal formats of \emph{precisions} can perform even better than "all" double configuration.
+	\item The \emph{computing precision} is the most critical step in the prediction process of these classifier. \textbf{Figure 1(b)} shows that in case of the \emph{Splice} dataset, SVM has to be trained at the highest precisions (purple strip). Out of 10 analysis (5-AP and 5-SVM)\footnote{We excluded Perceptron from the summary because it is hard to define a numerical threshold for precision, due to the fluctuating behavior of the algorithm (zigzag).} only 30\% of the time the training has to be performed at full precision, while in the other 70\% 10-bit is enough. We do not encourage to use 52-bit for \emph{computing precision} because it might be that using reduced but equal formats of \emph{precisions} result in better accuracy than "all" double configuration.
 	
-	\item Also the format of testing precision shows rooms for improvement. In these five datasets 9-bit for \emph{testing precision} is always enough to reach same accuracy as double precision. In particular, 60\% of the time 6-bit is enough for testing, while 30\% of the time 4-bit is enough, and once it happens that using only 2-bit for testing may reach same accuracy of full precision. \textbf{Figure 1(a,c)} shows how testing with 2-bit and 3-bit respectively, produces similar accuracy of 52-bit. In this scenario the quantization of \emph{testing precision} impacts on the total consumption of the predictor in terms of energy resources and execution time, with a particular focus of poor hardware devices with limited computing power. 
+	\item Also the format for \emph{testing precision} shows rooms for improvement. In these five datasets 9-bit for \emph{testing precision} is always enough to reach same accuracy as double precision. In particular, 60\% of the time 6-bit is enough for testing, while 30\% of the time 4-bit is enough, and finally in one case it happens that using only 2-bit for testing may reach same accuracy of full precision. \textbf{Figure 1(a,c)} shows how testing with 2-bit and 3-bit respectively, produces similar accuracy of 52-bit. In this scenario the quantization of \emph{testing precision} impacts on the total consumption of the predictor in terms of energy resources and execution time, with a particular focus of poor hardware devices with limited computing power. 
 	%, but it requires an higher \emph{computing precision} (purple region is restricted on top graph).
 	%Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. 
 	%Moreover, the following configuration: reading with 2-bit, training with 6-bit, and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.
