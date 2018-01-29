@@ -98,7 +98,7 @@
 \affiliation{
   %\position{Position1}
   %\department{Department1}              %% \department is recommended
-  \institution{School of Computing, University of Utah}            %% \institution is required
+  \institution{School of Computing, University of Utah, USA}            %% \institution is required
   %\streetaddress{Street1 Address1}
   %\city{City1}
   %\state{State1}
@@ -115,7 +115,7 @@
 \affiliation{
   %\position{Position2a}
   %\department{Department2a}             %% \department is recommended
-  \institution{School of Computing, University of Utah}           
+  \institution{School of Computing, University of Utah, USA}
   %% \institution is required
   %\streetaddress{Street2a Address2a}
   %\city{City2a}
@@ -130,10 +130,10 @@
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
-Perceptron and Support Vector Machine (SVM) algorithms are two well-known linear predictors. Their goal is to build the best hypothesis function given the training data to predict unknown samples in the future. 
-Usually, both training and testing procedures are implemented using IEEE 754 double precision, which results in a conservative approach to minimize the final error of the implementation. 
-The main goal of this work is to analyze the impact of floating-point precision tuning applied to these predictors. In particular, we want to determine whether reading the dataset or computing training and testing of the predictor is the most important to the accuracy of the algorithm.
-Our analysis focuses on very small bit-widths values of the floating-point range, and compare the resulting accuracy to well known IEEE 754 defined standards single and double precision.
+Perceptron and Support Vector Machine (SVM) algorithms are two well-known linear predictors. They are used to compute a hypothesis function given the labeled training data to predict labels of unknown samples in the future. 
+Both training and testing procedures are typically implemented using double precision floating-points to minimize the error, which often results in overly conservative implementations that waste runtime and/or energy. 
+In this work, we empirically analyze the impact of floating-point precision on these predictors. We assess whether the precision of reading the dataset, training, or testing is the most important for the overall accuracy.
+Our analysis in particular focuses on very small floating-point bit-widths (i.e., only several bits of precision), and compares these against the well-known and widely used single and double precision types.
 \end{abstract}
 
 
@@ -166,10 +166,10 @@ Our analysis focuses on very small bit-widths values of the floating-point range
 %% environment and commands, and keywords command.
 \maketitle
 \section{Introduction}
-We use floating-point representation because real world numbers have to be modeled in the machine. Squeezing real numbers into a finite sequence of bits requires an approximate representation\cite{WhatEvery}. 
-Developers approach is to be as much conservative as possible about floating-point precision: use the maximum precision provided by target platforms\cite{softfloat}. The execution of floating-point operations is the major contributor to energy consumption. Approximately 50\% of energy consumption depends on floating-point computations.
-The impact of low-cost floating-point precision on machine learning predictors is an active research area.
-For example, in recent papers \cite{gupta}\cite{dorefa}\cite{Hubara} the authors explore the effects of both floating-point and fixed precision reduction on neural networks. Typically they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
+Floating-point representation was invented to model real numbers in computers. Representing real numbers as a finite sequence of bits naturally introduces approximation, which leads to errors in computations~\cite{WhatEvery}. 
+Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform~\cite{softfloat}. However, executing floating-point operations is a major contributor to runtime and energy consumption, and hence leveraging lower precisions can lead to significant savings. Approximately 50\% of energy consumption depends on floating-point computations.
+The impact of low-cost floating-point precisions on machine learning predictors is an active research area.
+For example, several recent papers explore the effects of both floating-point and fixed precision reduction on neural networks\cite{gupta,dorefa,Hubara}. Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
 %Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
 %They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE 754 single floating-point representation (32-bit precision). 
 %Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
