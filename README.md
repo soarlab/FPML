@@ -10,9 +10,9 @@ It contains the graphical representation of the results of the analysis. Each fo
 ### realtime graphs
 (Beta) In realtime graphs we rely on the web service ``` https://mybinder.org``` to reproduce graphs in realtime allowing the user to interact with them. Try it!
 ### src
-Source code of the analyzer and useful tools.
+the source code of the analyzer and useful tools.
 ### wax2018-ML
-the work submitted to WAX conference 2018.
+the work submitted to WAX 2018.
 
 ## Getting Started
 
