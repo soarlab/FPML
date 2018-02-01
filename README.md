@@ -1,8 +1,18 @@
 # Floating Point analysis applied to Machine Learning predictors
 
-This project started as a class project for the Machine Learning class offered at the University of Utah. 
+This project was born as a class project for the Machine Learning class offered at the University of Utah. 
 The goal of the analysis is to study what is the impact of floating point precision on the accuracy of well known machine learning predictors: Perceptron (and Average) and SVM. 
 The analysis is built upon numerical libraries: [MPFR](http://www.mpfr.org/mpfr-current/mpfr.html) and [SoftFloat](https://iis-git.ee.ethz.ch/pulp-sw/softFloat).
+
+## Overview of the repository
+### graphs
+It contains the graphical representation of the results of the analysis. Each folder reports a different dataset: diabet,fourclass,heart,inosphere,and splice. In each folder you find the execution of Perceptron(P), Average Perceptron(AP), and SVM for the corresponding dataset. Moreover the folder ``` 1.Selected-Graphs``` contains most interesting graphs selected from the all datasets.
+### realtime graphs
+(Beta) In realtime graph we rely on the web service ``` https://mybinder.org``` to reproduce graphs in realtime allowing the user to interact with them. Try it!
+### src
+Source code of the analyzer and useful tools.
+### wax2018-ML
+the work submitted to WAX conference 2018.
 
 ## Getting Started
 
