@@ -1,3 +1,0 @@
-SVM,Epochs=5,LR=0.001,C=10,Acc:77.256404
-Perceptron,Epochs=10,LR=0.001,Acc:73.074593
-Average,Epochs=5,LR=1,Acc:75.632788
