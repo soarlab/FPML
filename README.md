@@ -1,6 +1,5 @@
-# Floating Point analysis applied to Machine Learning predictors
+# Exploring Floating-Point Trade-Offs in Machine Learning
 
-This project was born as a class project for the Machine Learning class offered at the University of Utah. 
 The goal of the analysis is to study what is the impact of floating point precision on the accuracy of well known machine learning predictors: Perceptron (and Average) and SVM. 
 The analysis is built upon numerical libraries: [MPFR](http://www.mpfr.org/mpfr-current/mpfr.html) and [SoftFloat](https://iis-git.ee.ethz.ch/pulp-sw/softFloat).
 
