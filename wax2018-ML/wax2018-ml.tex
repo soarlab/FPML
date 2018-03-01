@@ -71,7 +71,7 @@
 \begin{document}
 
 %% Title information
-\title{Exploring Floating-Point Trade-Offs in ML}         %% [Short Title] is optional;
+\title{\vspace{-1ex}Exploring Floating-Point Trade-Offs in ML\vspace{-5ex}}         %% [Short Title] is optional;
                                         %% when present, will be used in
                                         %% header instead of Full Title.
 %\titlenote{Both Vanilla and Average variants of the Perceptron algorithm}             %% \titlenote is optional;
@@ -173,15 +173,19 @@ Floating-point representation was invented to model real numbers in computers. R
 Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform. However, executing floating-point operations can be a major contributor to runtime and energy consumption. For example, Tagliavini et al.~\cite{softfloat} run a set of floating-point applications on a microcontroller, and empirically show that 30\% of the energy consumption was due to floating-points computations and another 20\% due to moving operands between memory and registers.
 Hence, leveraging lower precisions can lead to significant savings, and the impact of low-cost floating-point precisions on machine learning predictors is an active research area.
 
-Several recent papers explore the effects of floating-point and fixed precision reduction on neural networks~\cite{gupta,dorefa,Hubara}. Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
-%Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
+Several recent papers explore the effects of floating-point and fixed precision reduction on neural networks~\cite{gupta,dorefa,Hubara}. 
+%%Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
+Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
 %They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE 754 single floating-point representation (32-bit precision). 
-%Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
-%Hubara et al.\cite{Hubara} introduce a method to train Quantized-Neural-Networks (QNNs) using low precision arithmetic.
-%They showed how using 4 bits for weights and activation step result in a degradation of 5.5\% compared to 32-bit single precision.
+Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
+Hubara et al.\cite{Hubara} introduce a method to train Quantized-Neural-Networks (QNNs) using low precision arithmetic.
+They showed how using 4 bits for weights and activation step result in a degradation of 5.5\% compared to 32-bit single precision.
+
 Others studied the effects of reduced precision on the misprediction rate of the SVM algorithm, and
 focused on the quantization of the classification process~\cite{auguita,SVM}.
 
+Lesser et al. applies quantization only on mantissa tuning as we do, on the other hand they focus the quantization only on the classification process.In this way they discard all dependencies among reading, computing and testing. 
+We detect the best hyper-parameters configuration for each dataset before performing the quantization, while the authors adopts same configuration for all the datasets. Moreover, it is not clear what is the precision used for reading during testing. Although we differ on kernel implementation (Gaussian and Linear), they empirically show that using any precision in the range [52,15] results in equal accuracy.
 
 In this work, we study the effects of floating-point precision on the accuracy
 of the Perceptron and SVM machine learning algorithms.  We implemented the
@@ -193,7 +197,7 @@ very small floating-point bit-widths.  Our results and conclusions serve as a
 guideline for making floating-point precision choices when implementing these
 algorithms.
 
-%Our approach is similar because the analysis applies only on mantissa tuning, on the other hand they focus the quantization on the classification process, without taking in consideration both training and reading phases of the algorithm. In this way they do not consider all the dependencies among reading, computing and testing. Moreover, it is not clear what is the precision used for reading during testing. 
+%Our approach is similar because the analysis applies only on mantissa tuning, on the other hand they focus the quantization only on the classification process, without taking in consideration both training and reading phases of the algorithm. In this way they do not consider all the dependencies among reading, computing and testing. Moreover, it is not clear what is the precision used for reading during testing. 
 %We detect the best hyperparameter configuration for each dataset before performing any quantization, while the authors adopts the same configuration for all the datasets.
 %Although their implementation of SVM differs from our (Gaussian and Linear Kernel), they empirically show that using any precision in the range [52,15] results in same accuracy. 
 %At the same time, we are aware of many analyzers that are able to scan a black box algorithm to minimize the precision of each floating-point instruction while still maintaining the desired value of accuracy \cite{reducelam}\cite{mixpreclam}\cite{precimonious}\cite{blame}. 
@@ -208,8 +212,8 @@ algorithms.
 %We study what affect the accuracy of these predictors in case of poor floating-point precision computations. Our goal is to empirically show how limited can be the floating-point format while still maintaining high accuracy. Also, we report which step in the lifetime of these predictors is most sensitive to precision tuning. 
 
 %We want to compare the accuracy of these predictors ($\frac{Correct.Prediction}{Tot.Samples}$) between minimal values of floating-point precision (from 2 to 10 bits for mantissa representation) and well known (and expensive) single and double precisions. %
-
-
+\vspace{-1ex}
+\setlength{\belowcaptionskip}{-2pt}
 \begin{figure*}
 	\hspace*{\fill}%
 	\begin{subfigure}[b]{0.29\linewidth}
@@ -218,6 +222,7 @@ algorithms.
 		\includegraphics[width=\linewidth, height=0.6\linewidth]{DiabetMPFRpart3APTes2}
 	\end{subfigure}
 	\hfill%
+		\vspace{-12pt}%
 	\begin{subfigure}[b]{0.29\linewidth}
 		%\centering
 		\caption{{\tiny{Splice(SVM):7-bit(t) vs 52-bit(b)}}}
@@ -229,8 +234,10 @@ algorithms.
 		\includegraphics[width=\linewidth, height=0.6\linewidth]{heartFLEXpart3SVMTest3}
 	\end{subfigure}
 	\hspace*{\fill}%  
+	\setlength{\belowcaptionskip}{-30pt}	
 	%\caption{General caption}
 \end{figure*}
+\setlength{\belowcaptionskip}{-10pt}
 \setcounter{figure}{0}    
 \begin{figure*}
 	\hspace*{\fill}%
@@ -252,11 +259,11 @@ algorithms.
 		%and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}{\tiny }
 	\end{subfigure}
 	\hspace*{\fill}%
+	  \vspace{-7pt}
+	  
 	\caption{Accuracy for various precision regimes. Graphs compare two chosen testing precisions (top and bottom) on different datasets. Axis $R$ denotes reading precision, $C$ computing precision, and the third axis shows the accuracy. For example, $(2,10)$ represents a 2-bit mantissa and 10-bit exponent.}
 	\label{results}
 \end{figure*}
-
-
 \section{Methodology}
 
 The format adopted for floating-point representation consists of the sign of the number, significand (mantissa), and exponent. 
