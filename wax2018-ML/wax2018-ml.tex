@@ -188,7 +188,7 @@ Lesser et al. applies quantization only on mantissa as we do. On the other hand 
 We detect the best hyper-parameters configuration for each dataset before performing the quantization, while the authors adopts same configuration for all the datasets. Moreover, it is not clear what is the precision used for reading during testing. Although we differ on kernel implementation (Gaussian and Linear), they empirically show that using any precision in the range [52,15] results in equal accuracy.
 
 In this work, we study the effects of floating-point precision on the accuracy
-of the Perceptron and SVM machine learning algorithms. We focus on single-layer neural networks because it is easy to control and it is a convex function. Moreover, in multi-layer neural networks the relation between quantization and accuracy might be affected by other factors which are orthogonal with respect to the goal of this work.  
+of the Perceptron and SVM machine learning algorithms. We focus on single-layer neural networks because it is easy to control and it is a convex optimization problem that converges to the optimum with infinite floating-point precision. Moreover, in multi-layer neural networks the relation between quantization and accuracy might be affected by other factors which are orthogonal with respect to the goal of this work.  
 
 We implemented the algorithms using multiple-precision numerical libraries, which allows us to independently vary the precision of reading the dataset, computing the model,
 and testing of the computed model. We empirically evaluated the
@@ -338,7 +338,7 @@ reduce memory traffic.  In all our datasets, reducing the reading precision
 does not have a noticeable impact on the final accuracy --- samples can be
 stored even using only 3 bits for mantissa. Anyway we believe that 
 the relation between quantization and accuracy depends on the dataset, 
-and no common behaviors exists for all possible datasets.
+then no common behaviors exists among all possible datasets.
 
 The computing precision is the most critical and sensitive parameter. For
 example, Figure~\ref{results}(b) shows that in case of the \emph{Splice}
