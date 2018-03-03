@@ -177,20 +177,20 @@ Several recent papers explore the effects of floating-point and fixed precision 
 %%Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
 Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
 %They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE 754 single floating-point representation (32-bit precision). 
-Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
+Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. 
+%They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
 Hubara et al.\cite{Hubara} introduce a method to train Quantized-Neural-Networks (QNNs) using low precision arithmetic.
-They showed how using 4-bit for weights and activation result in a degradation of 5.5\% of accuracy compared to 32-bit single precision.
+%They showed how using 4-bit for weights and activation result in a degradation of 5.5\% of accuracy compared to 32-bit single precision.
 
-Other works studied the effects of reduced precision on the misprediction rate of the SVM algorithm, and
-focused on the quantization of the classification process~\cite{auguita,SVM}.
-
-Lesser et al. applies quantization only on mantissa as we do, on the other hand they focus only on the classification process. Doing this they discard all dependencies among reading, computing and testing. 
+Other works studied the effects of reduced precision on the misprediction rate of the SVM algorithm~\cite{auguita,SVM}.
+%, and focused on the quantization of the classification process~\cite{auguita,SVM}.
+Lesser et al. applies quantization only on mantissa as we do. On the other hand they focus only on the classification process discarding all dependencies among reading, computing and testing. 
 We detect the best hyper-parameters configuration for each dataset before performing the quantization, while the authors adopts same configuration for all the datasets. Moreover, it is not clear what is the precision used for reading during testing. Although we differ on kernel implementation (Gaussian and Linear), they empirically show that using any precision in the range [52,15] results in equal accuracy.
 
 In this work, we study the effects of floating-point precision on the accuracy
-of the Perceptron and SVM machine learning algorithms.  We implemented the
-algorithms using multiple-precision numerical libraries, which allows us to
-independently vary the precision of reading the dataset, computing the model,
+of the Perceptron and SVM machine learning algorithms. We focus on single-layer neural networks because it is easy to control and it is a convex function. Moreover, in multi-layer neural networks the relation between quantization and accuracy might be affected by other factors which are orthogonal with respect to the goal of this work.  
+
+We implemented the algorithms using multiple-precision numerical libraries, which allows us to independently vary the precision of reading the dataset, computing the model,
 and testing of the computed model. We empirically evaluated the
 precision/accuracy trade-offs on several datasets, with a particular focus on
 very small floating-point bit-widths.  Our results and conclusions serve as a
