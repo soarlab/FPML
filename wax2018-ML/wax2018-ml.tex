@@ -133,9 +133,9 @@
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
-Perceptron and Support Vector Machine (SVM) algorithms are two well-known linear predictors. They are used to compute a hypothesis function using supervised learning to predict labels of unknown samples in the future. 
+Perceptron and Support Vector Machine (SVM) algorithms are two well-known and widely used linear predictors. They compute a hypothesis function using supervised learning to predict labels of unknown future samples. 
 Both training and testing procedures are typically implemented using double precision floating-points to minimize the error, which often results in overly conservative implementations that waste runtime and/or energy. 
-In this work, we empirically analyze the impact of floating-point precision on these predictors. We assess whether the precision of reading the dataset, training, or testing is the most important for the overall accuracy.
+In this work, we empirically analyze the impact of floating-point precision on these predictors. We assess whether the precision of reading the dataset, training, or testing is the most critical for the overall accuracy.
 Our analysis in particular focuses on very small floating-point bit-widths (i.e., only several bits of precision), and compares these against the well-known and widely used single and double precision types.
 \end{abstract}
 
@@ -170,16 +170,16 @@ Our analysis in particular focuses on very small floating-point bit-widths (i.e.
 \maketitle
 \section{Introduction}
 Floating-point representation was invented to model real numbers in computers. Representing real numbers as a finite sequence of bits naturally introduces approximation, which leads to errors in computations~\cite{WhatEvery}. 
-Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform. However, executing floating-point operations can be a major contributor to runtime and energy consumption. For example, Tagliavini et al.~\cite{softfloat} run a set of floating-point applications on a microcontroller, and empirically show that 30\% of the energy consumption was due to floating-points computations and another 20\% due to moving operands between memory and registers.
+Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform. However, executing floating-point operations can be a major contributor to runtime and energy consumption. For example, Tagliavini et al.~\cite{softfloat} run a set of floating-point applications on a microcontroller, and show that 30\% of the energy consumption was due to floating-point computations and another 20\% due to moving operands between memory and registers.
 Hence, leveraging lower precisions can lead to significant savings, and the impact of low-cost floating-point precisions on machine learning predictors is an active research area.
 
-Several recent papers explore the effects of floating-point and fixed precision reduction on neural networks~\cite{gupta,dorefa,Hubara}. 
+Several recent papers explore the effects of floating- and fixed-point reduction on neural networks~\cite{gupta,dorefa,Hubara}. 
 %%Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
-Gupta et al.\cite{gupta} prove that deep neural network can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
+Gupta et al.\cite{gupta} show that deep neural networks can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
 %They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE 754 single floating-point representation (32-bit precision). 
-Zhou et al. \cite{dorefa} propose innovative methods to train Convolutional-Neural-Networks (CNNs) with low bit-width weights, activations and gradients. 
+Zhou et al. \cite{dorefa} propose innovative methods to train convolutional neural networks with low bit-width weights, activations, and gradients. 
 %They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
-Hubara et al.\cite{Hubara} introduce a method to train Quantized-Neural-Networks (QNNs) using low precision arithmetic.
+Hubara et al.\cite{Hubara} introduce a method to train quantized neural networks using low precision arithmetic.
 %They showed how using 4-bit for weights and activation result in a degradation of 5.5\% of accuracy compared to 32-bit single precision.
 
 Other works studied the effects of reduced precision on the misprediction rate of the SVM algorithm~\cite{auguita,SVM}.
