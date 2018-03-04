@@ -181,13 +181,13 @@ Zhou et al. \cite{dorefa} propose innovative methods to train convolutional neur
 %They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
 Hubara et al.\cite{Hubara} introduce a method to train quantized neural networks using low precision arithmetic.
 %They showed how using 4-bit for weights and activation result in a degradation of 5.5\% of accuracy compared to 32-bit single precision.
-
+%
 Other works studied the effects of reduced precision on the misprediction rate of the SVM algorithm~\cite{auguita,SVM}.
 %, and focused on the quantization of the classification process~\cite{auguita,SVM}.
-Lesser et al. apply quantization only on mantissa as we do. On the other hand they focus only on the classification process discarding all dependencies among reading, computing and testing. 
-We detect the best hyper-parameters configuration for each dataset before performing the quantization, while the authors adopts same configuration for all the datasets. Moreover, it is not clear what is the precision used for reading during testing. Although we differ on kernel implementation (Gaussian and Linear), they empirically show that using any precision in the range [52,15] results in equal accuracy.
+Lesser et al.~\cite{SVM} apply quantization on mantissas. Unlike us, they focus only on the classification process, and do not independently study reading, computing, and testing. 
+We detect the best hyper-parameters configuration for each dataset, while they always use the same configuration. Although we differ in kernel implementation (Gaussian vs Linear), they also show that using any precision in the [15,52] range results in comparable accuracy.
 
-In this work, we study the effects of floating-point precision on the accuracy
+We study the effects of floating-point precision on the accuracy
 of the Perceptron and SVM machine learning algorithms. We focus on single-layer neural networks because it is easy to control and it is a convex optimization problem that converges to the optimum with infinite floating-point precision. Moreover, in multi-layer neural networks the relation between quantization and accuracy might be affected by other factors which are orthogonal with respect to the goal of this work.  
 
 We implemented the algorithms using multiple-precision numerical libraries, which allows us to independently vary the precision of reading the dataset, computing the model,
