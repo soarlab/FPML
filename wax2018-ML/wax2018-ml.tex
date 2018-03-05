@@ -133,6 +133,7 @@
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
+\vspace{-2mm}
 Perceptron and Support Vector Machine (SVM) algorithms are two well-known and widely used linear predictors. They compute a hypothesis function using supervised learning to predict labels of unknown future samples. 
 Both training and testing procedures are typically implemented using double precision floating-points to minimize the error, which often results in overly conservative implementations that waste runtime and/or energy. 
 In this work, we empirically analyze the impact of floating-point precision on these predictors. We assess whether the precision of reading the dataset, training, or testing is the most critical for the overall accuracy.
@@ -168,28 +169,32 @@ Our analysis in particular focuses on very small floating-point bit-widths (i.e.
 %% commands, abstract environment, Computing Classification System
 %% environment and commands, and keywords command.
 \maketitle
+
+\vspace{-2mm}
 \section{Introduction}
+\vspace{-1mm}
 Floating-point representation was invented to model real numbers in computers. Representing real numbers as a finite sequence of bits naturally introduces approximation, which leads to errors in computations~\cite{WhatEvery}. 
 Hence, developers are often conservative about floating-point precision, and use the maximum precision provided by their target platform. However, executing floating-point operations can be a major contributor to runtime and energy consumption. For example, Tagliavini et al.~\cite{softfloat} run a set of floating-point applications on a microcontroller, and show that 30\% of the energy consumption was due to floating-point computations and another 20\% due to moving operands between memory and registers.
 Hence, leveraging lower precisions can lead to significant savings, and the impact of low-cost floating-point precisions on machine learning predictors is an active research area.
 
 Several recent papers explore the effects of floating- and fixed-point reduction on neural networks~\cite{gupta,dorefa,Hubara}. 
 %%Typically, they conclude that using very low precision arithmetic results in minimal loss of accuracy compared to single or double precision.
-Gupta et al.\cite{gupta} show that deep neural networks can be trained using low precision fixed-point arithmetic, with a minimal sacrifice of quality. 
+Gupta et al.\cite{gupta} show that neural networks can be trained using low precision fixed-points, with a minimal sacrifice of quality. 
 %They show how performing fixed point arithmetic using only 16-bit of precision produces same results of IEEE 754 single floating-point representation (32-bit precision). 
 Zhou et al. \cite{dorefa} propose innovative methods to train convolutional neural networks with low bit-width weights, activations, and gradients. 
 %They show how using 1-bit weight, 1-bit activation and 2-bit gradient achieve a value of 93\% of accuracy compared to 97\% obtained with 32-bit single precision. 
 Hubara et al.\cite{Hubara} introduce a method to train quantized neural networks using low precision arithmetic.
 %They showed how using 4-bit for weights and activation result in a degradation of 5.5\% of accuracy compared to 32-bit single precision.
 %
-Other works studied the effects of reduced precision on the misprediction rate of the SVM algorithm~\cite{auguita,SVM}.
+Others studied the effects of reduced precision on the SVM algorithm~\cite{auguita,SVM}.
 %, and focused on the quantization of the classification process~\cite{auguita,SVM}.
-Lesser et al.~\cite{SVM} apply quantization on mantissas. Unlike us, they focus only on the classification process, and do not independently study reading, computing, and testing. 
-We detect the best hyper-parameters configuration for each dataset, while they always use the same configuration. Although we differ in kernel implementation (Gaussian vs Linear), they also show that using any precision in the [15,52] range results in comparable accuracy.
+As us, Lesser et al.~\cite{SVM} apply quantization on mantissas. Unlike us, they focus only on the classification process, and do not independently study reading, computing, and testing. Furthermore, they show that using any precision in the $\left[15,52\right]$ range leads to comparable accuracy,
+while our results indicate that even lower precisions are adequate for many datasets; note that
+we do differ in kernel implementations (Gaussian vs Linear).
 
 We study the effects of floating-point precision on the accuracy
-of the Perceptron and SVM machine learning algorithms. We focus on single-layer neural networks because it is easy to control and it is a convex optimization problem that converges to the optimum with infinite floating-point precision. Moreover, in multi-layer neural networks the relation between quantization and accuracy might be affected by other factors which are orthogonal with respect to the goal of this work.  
-
+of the Perceptron and SVM machine learning algorithms. We focus on single-layer neural networks since they are easy to control and employ a convex optimization problem that converges to the optimum in reals. Moreover, in multi-layer neural networks the relation between quantization and accuracy might be affected by other factors orthogonal to our exploration.  
+%
 We implemented the algorithms using multiple-precision numerical libraries, which allows us to independently vary the precision of reading the dataset, computing the model,
 and testing of the computed model. We empirically evaluated the
 precision/accuracy trade-offs on several datasets, with a particular focus on
@@ -259,31 +264,34 @@ algorithms.
 		%and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.}{\tiny }
 	\end{subfigure}
 	\hspace*{\fill}%
-	  \vspace{-7pt}
-	  
+	  \vspace{-9pt}
 	\caption{Accuracy for various precision regimes. Graphs compare two chosen testing precisions (top and bottom) on different datasets. Axis $R$ denotes reading precision, $C$ computing precision, and the third axis shows the accuracy. For example, $(2,10)$ represents a 2-bit mantissa and 10-bit exponent.}
 	\label{results}
 \end{figure*}
+
+
+\vspace{-2mm}
 \section{Methodology}
+\vspace{-1mm}
 
 The format adopted for floating-point representation consists of the sign of the number, significand (mantissa), and exponent. 
 This format is part of the IEEE 754 standard~\cite{IEEE}, which includes, among others, two well-known and popular representations: single precision (1-bit sign, 23-bit mantissa, 8-bit exponent) and double precision (1-bit sign, 52-bit mantissa, 11-bit exponent).
 However, it has been shown that using representations other than these default ones can be beneficial in many applications to improve runtime and energy efficiency~\cite{softfloat}, which is what we explore in this work.
 %It has been showed \cite{softfloat} the way mantissa and exponent split the total amount of bits in single and double representation can be further improved.
 
-The Perceptron algorithm~\cite{perceptron} 
+Perceptron~\cite{perceptron} 
 %is a supervised learning algorithm.It %
-is a mistake-driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector, which is the main contributor to the classification process. 
+is a mistake-driven algorithm: once a sample is misclassified the predictor is updated. The update step involves the weight vector as the main contributor to the classification process. 
 %The Perceptron is composed of one neuron with activation function.
 Particularly interesting in terms of floating-point analysis is the average variant of Perceptron, which
 maintains an average predictor weighted on wrong predictions, and it needs a wider dynamic range for this computation.
-
-The SVM algorithm~\cite{cortes,vapnik} 
+%
+SVM~\cite{cortes,vapnik} 
 %also produces a linear classifier, but it 
 %differs from Perceptron in the way the hyperplane is obtained. It 
 is more restrictive than Perceptron since it aims for a safe margin between the linear separator and the closest samples. 
 %We implemented the soft version of SVM, meaning that samples are allowed to exist between the linear separator and the margin. 
-SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of samples violating it.
+SVM is trained using a stochastic sub-gradient descent method, whose goal is to maximize the safe margin while minimizing the number of violating samples.
 
 
 
@@ -318,31 +326,31 @@ We measure the accuracy of the model by performing a 4-fold cross-validation on 
 
 \section{Results}
 
-We used the following five datasets for our empirical evaluation: \emph{fourclass}~\cite{fourclass}, \emph{heart}, \emph{diabet}, \emph{ionosphere}, and \emph{splice}~\cite{UCI}.
+We used the following datasets for our empirical evaluation: \emph{fourclass}~\cite{fourclass} and \emph{heart}, \emph{diabet}, \emph{ionosphere}, \emph{splice}~\cite{UCI}.
 They range in size between 270--1000 samples and 2--60 features.
-Before training, we scale each dataset to the interval $[-1,1]$, and detect a
+Before training, we scale each dataset to the $\left[-1,1\right]$ interval, and detect a
 good hyper-parameters configuration for each algorithm.
-We vary the number of mantissa bits for reading, training, and testing in the range 
-$[2,3,\ldots,9,10,23,52]$.
-We made the source code and detailed results publicly available.\footnote{See \url{https://github.com/soarlab/FPML}}
+We vary the number of mantissa bits for reading, training, and testing from
+$\left\{2,3,\ldots,9,10,23,52\right\}$.
+We made the source code and detailed results publicly available at \url{https://github.com/soarlab/FPML}.
 %All tests are performed on a PC desktop machine.
 %running Ubuntu 16.04 i7-6700HQ CPU @ 2.60GHz and 16GB RAM.
 %All the graphs are obtained with matplotlib library\cite{matplotlib}. 
 %
-Figure~\ref{results} shows several representative and interesting graphs we generated,
-and in the rest of this section we discuss several key observations.
+Fig.~\ref{results} shows several representative and interesting graphs we generated,
+and in the rest of this section we discuss key observations.
 
 The precision used to store and read the dataset can be substantially reduced
 with respect to single or double precisions. This is encouraging since
 detecting a minimal threshold value for the reading precision can significantly
 reduce memory traffic.  In all our datasets, reducing the reading precision
 does not have a noticeable impact on the final accuracy --- samples can be
-stored even using only 3 bits for mantissa. Anyway we believe that 
-the relation between quantization and accuracy depends on the dataset, 
-then no common behaviors exists among all possible datasets.
+stored even using only 3 bits for mantissa. However,
+the relation between quantization and accuracy depends on the dataset,
+and precision has to be fine-tuned for the given dataset.
 
 The computing precision is the most critical and sensitive parameter. For
-example, Figure~\ref{results}(b) shows that in case of the \emph{Splice}
+example, Fig.~\ref{results}(b) shows that in case of the \emph{Splice}
 dataset, SVM has to be trained at the highest (double) precision to achieve
 good accuracy.  To summarize, out of 10 analysis runs (5 AP and 5 SVM) only
 30\% of the time training has to be performed at double precision, while in the
@@ -352,24 +360,25 @@ in terms of accuracy.)
 
 The testing precision can often be substantially reduced without having a major
 impact on the accuracy.
-For our five datasets, using 9 bits mantissa for testing is always enough to
+For our datasets, using 9 bits mantissa for testing is always enough to
 reach the same accuracy as double precision. More precisely, 60\% of the time 6 bits
 is enough, while 30\% of the time 4 bits is enough.
 Finally, in one case using only 2 bits for testing achieves similar accuracy
 as double precision.
-Figures~\ref{results}(a,c) show how testing with just 2 and
+Figs.~\ref{results}(a,c) show how testing with just 2 and
 3 bits produces accuracy similar to using double (52 bits).
 This is particularly important for deployment scenarios where training is
 performed on large machines potentially using double precision, but the learned
 models are deployed to for example mobile platforms using very low precision to
 conserve energy.
 
+\vspace{-3mm}
 \paragraph{Acknowledgements}
 We thank Annie Cherkaev and Vi\-vek Srikumar for insightful discussions. This
 work was supported in part by NSF CCF 1552975.
 
 	%, but it requires an higher \emph{computing precision} (purple region is restricted on top graph).
-	%Figure(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. 
+	%Fig.(\textbf{c}) shows how testing with 3-bit produces similar accuracy of 52-bit. 
 	%Moreover, the following configuration: reading with 2-bit, training with 6-bit, and testing with 3-bit is enough to reach similar accuracy of "all" double configuration.
 
 %% Acknowledgments
